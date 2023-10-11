@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: cgclient
+  name: cgclient
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: cgclient
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+
+      labels:
+        io.kompose.network/kubernetes-default: "true"
+        io.kompose.service: cgclient
+    spec:
+      containers:
+        - image: javi14t/cgclient:last
+          name: cgclient
+          ports:
+            - containerPort: 22
+              hostPort: 2222
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/registro
+              name: cgclient-claim0
+      restartPolicy: Always
+      volumes:
+        - name: cgclient-claim0
+          persistentVolumeClaim:
+            claimName: cgclient-claim0
+status: {}

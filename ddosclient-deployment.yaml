@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: ddosclient
+  name: ddosclient
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ddosclient
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.network/kubernetes-default: "true"
+        io.kompose.service: ddosclient
+    spec:
+      containers:
+        - image: javi14t/ddosclient:last
+          name: ddosclient
+          ports:
+            - containerPort: 22
+              hostPort: 2226
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/registro
+              name: ddosclient-claim0
+      restartPolicy: Always
+      volumes:
+        - name: ddosclient-claim0
+          persistentVolumeClaim:
+            claimName: ddosclient-claim0
+status: {}

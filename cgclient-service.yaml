@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: cgclient
+  name: cgclient
+  namespace: default
+spec:
+  ports:
+    - name: "2222"
+      port: 2222
+      targetPort: 22
+  selector:
+    io.kompose.service: cgclient
+status:
+  loadBalancer: {}

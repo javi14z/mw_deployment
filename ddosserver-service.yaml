@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: ddosserver
+  name: ddosserver
+  namespace: default
+spec:
+  ports:
+    - name: "2228"
+      port: 2228
+      targetPort: 22
+    - name: "4433"
+      port: 4433
+      targetPort: 4433
+    - name: "8080"
+      port: 8080
+      targetPort: 8080
+    - name: "53"
+      port: 53
+      protocol: UDP
+      targetPort: 53
+  selector:
+    io.kompose.service: ddosserver
+status:
+  loadBalancer: {}

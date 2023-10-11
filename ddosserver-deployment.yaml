@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: ddosserver
+  name: ddosserver
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ddosserver
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.network/kubernetes-default: "true"
+        io.kompose.service: ddosserver
+    spec:
+      containers:
+        - image: javi14t/ddosserver:last
+          name: ddosserver
+          ports:
+            - containerPort: 22
+              hostPort: 2228
+              protocol: TCP
+            - containerPort: 4433
+              hostPort: 4433
+              protocol: TCP
+            - containerPort: 8080
+              hostPort: 8080
+              protocol: TCP
+            - containerPort: 53
+              hostPort: 53
+              protocol: UDP
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/registro
+              name: ddosserver-claim0
+      restartPolicy: Always
+      volumes:
+        - name: ddosserver-claim0
+          persistentVolumeClaim:
+            claimName: ddosserver-claim0
+status: {}

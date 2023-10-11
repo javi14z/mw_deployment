@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: cgserver
+  name: cgserver
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: cgserver
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.network/kubernetes-default: "true"
+        io.kompose.service: cgserver
+    spec:
+      containers:
+        - image: javi14t/cgserver:last
+          name: cgserver
+          ports:
+            - containerPort: 22
+              hostPort: 2224
+              protocol: TCP
+            - containerPort: 8888
+              hostPort: 8888
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/registro
+              name: cgserver-claim0
+      restartPolicy: Always
+      volumes:
+        - name: cgserver-claim0
+          persistentVolumeClaim:
+            claimName: cgserver-claim0
+status: {}
