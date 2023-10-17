@@ -6,7 +6,6 @@
     - name: Delete deploy cgclient
       k8s:
         state: absent
-        namespace: default
         src:
           - k8s/cgclient-deployment.yaml
           - k8s/cgclient-service.yaml
@@ -15,7 +14,6 @@
     - name: Delete deploy cgserver
       k8s:
         state: absent
-        namespace: default
         src:
           - k8s/cgserver-deployment.yaml
           - k8s/cgserver-service.yaml
@@ -24,7 +22,6 @@
     - name: Delete deploy ddosclient
       k8s:
         state: absent
-        namespace: default
         src:
           - k8s/ddosclient-deployment.yaml
           - k8s/ddosclient-service.yaml
@@ -33,7 +30,6 @@
     - name: Delete deploy ddosserver
       k8s:
         state: absent
-        namespace: default
         src:
           - k8s/ddosserver-deployment.yaml
           - k8s/ddosserver-service.yaml
