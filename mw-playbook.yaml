@@ -18,9 +18,9 @@
     - name: Obtener nombres de los pods ddosserver 
       shell: kubectl get pods -l io.kompose.service=ddosserver -o custom-columns=":metadata.name" --no-headers
       register: pod_names_ddosserver
-
+#Comandos a ejecutar
     - name: Ejecutar programa en los pods
       command: kubectl exec -it {{ item }} -- python3 ACROSSfile_transfer.py
       with_items: "{{ pod_names_cgclient.stdout_lines }}"
-      async: 3600 #Definir tiempo de la tarea
+      async: 3600 # Definir tiempo de la tarea
       poll: 0
