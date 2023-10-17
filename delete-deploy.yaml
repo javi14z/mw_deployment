@@ -1,64 +1,40 @@
 ---
-- name: Deploy Kubernetes Resources
+- name: Deploys de Kubernetes
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: cgclient
+    - name: Delete deploy cgclient
       k8s:
         state: absent
-        src: k8s/cgclient-deployment.yaml
+        namespace: default
+        src:
+          - k8s/cgclient-deployment.yaml
+          - k8s/cgclient-service.yaml
+          - k8s/cgclient-claim0-persistentvolumeclaim.yaml
 
-    - name: cgclient service
+    - name: Delete deploy cgserver
       k8s:
         state: absent
-        src: k8s/cgclient-service.yaml
+        namespace: default
+        src:
+          - k8s/cgserver-deployment.yaml
+          - k8s/cgserver-service.yaml
+          - k8s/cgserver-claim0-persistentvolumeclaim.yaml
 
-    - name: cgclient PVC
+    - name: Delete deploy ddosclient
       k8s:
         state: absent
-        src: k8s/cgclient-claim0-persistentvolumeclaim.yaml
-###############################################
-    - name: cgserver
+        namespace: default
+        src:
+          - k8s/ddosclient-deployment.yaml
+          - k8s/ddosclient-service.yaml
+          - k8s/ddosclient-claim0-persistentvolumeclaim.yaml
+          
+    - name: Delete deploy ddosserver
       k8s:
         state: absent
-        src: k8s/cgserver-deployment.yaml
-
-    - name: cgserver service
-      k8s:
-        state: absent
-        src: k8s/cgserver-service.yaml
-
-    - name: cgserver PVC
-      k8s:
-        state: absent
-        src: k8s/cgserver-claim0-persistentvolumeclaim.yaml
-###############################################
-    - name: ddosclient
-      k8s:
-        state: absent
-        src: k8s/ddosclient-deployment.yaml
-
-    - name: ddosclient service
-      k8s:
-        state: absent
-        src: k8s/ddosclient-service.yaml
-
-    - name: ddosclient PVC
-      k8s:
-        state: absent
-        src: k8s/ddosclient-claim0-persistentvolumeclaim.yaml
-###############################################
-    - name: ddosserver
-      k8s:
-        state: absent
-        src: k8s/ddosserver-deployment.yaml
-
-    - name: ddosserver service
-      k8s:
-        state: absent
-        src: k8s/ddosserver-service.yaml
-
-    - name: ddosserver PVC
-      k8s:
-        state: absent
-        src: k8s/ddosserver-claim0-persistentvolumeclaim.yaml
+        namespace: default
+        src:
+          - k8s/ddosserver-deployment.yaml
+          - k8s/ddosserver-service.yaml
+          - k8s/ddosserver-claim0-persistentvolumeclaim.yaml
