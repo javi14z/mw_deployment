@@ -1,0 +1,26 @@
+---
+- name: Ejecutar programas en pods 
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Obtener nombres de los pods cgclient 
+      shell: kubectl get pods -l io.kompose.service=cgclient -o custom-columns=":metadata.name" --no-headers
+      register: pod_names_cgclient
+      
+    - name: Obtener nombres de los pods cgserver 
+      shell: kubectl get pods -l io.kompose.service=cgserver -o custom-columns=":metadata.name" --no-headers
+      register: pod_names_cgserver
+
+    - name: Obtener nombres de los pods ddosclient 
+      shell: kubectl get pods -l io.kompose.service=ddosclient -o custom-columns=":metadata.name" --no-headers
+      register: pod_names_ddosclient
+
+    - name: Obtener nombres de los pods ddosserver 
+      shell: kubectl get pods -l io.kompose.service=ddosserver -o custom-columns=":metadata.name" --no-headers
+      register: pod_names_ddosserver
+
+    - name: Ejecutar programa en los pods
+      command: kubectl exec -it {{ item }} -- python3 ACROSSfile_transfer.py
+      with_items: "{{ pod_names_cgclient.stdout_lines }}"
+      async: 3600 #Definir tiempo de la tarea
+      poll: 0
