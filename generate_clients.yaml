@@ -1,6 +1,5 @@
 ---
 - name: Generate Clients
-  hosts: localhost
   gather_facts: no
   vars:
     num_cgclients: 1

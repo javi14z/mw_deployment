@@ -1,10 +1,10 @@
 ---
 - name: Execute task in pods
-  hosts: localhost
+  hosts: controller
   gather_facts: no
   tasks:
     - name: Include the client generation playbook
-      include: generate_clients.yml
+      include_tasks: generate_clients.yml
     
 
     - name: Execute ACROSSfile_transfer

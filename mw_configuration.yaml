@@ -2,10 +2,25 @@
 - name: Topology Configuration
   hosts: localhost
   gather_facts: no
-  tasks:
-    - name: Include the client generation playbook
-      include: generate_clients.yml
+  vars:
+    cgclients:
+      - name: cgclient1
+        pod: cgclient1
+      - name: cgclient2
+        pod: cgclient2
+      - name: cgclient3
+        pod: cgclient3
 
+    ddosclients:
+      - name: ddosclient1
+        pod: ddosclient1
+      - name: ddosclient2
+        pod: ddosclient2
+      - name: ddosclient3
+        pod: ddosclient3
+
+
+  tasks:
     - name: Configure cgserver
       command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
     - name: Configure ddosserver
@@ -13,37 +28,35 @@
 
 
     - name: Get cgserver IP
-      command: kubectl exec -n ddos cgserver -- ip addr show eth1 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+      shell: "kubectl exec -n ddos cgserver -- ip addr show eth1 | awk '/inet / {gsub(/\\/\\/[0-9]+/, \"\", $2); print $2}'"
       register: cgserver_ip_output
       changed_when: false
       ignore_errors: yes
 
-    - name: Set cgserver IP as a fact
+    - name: Extract IP from cgserver_ip_output
       set_fact:
-        cgserver_ip: "{{ cgserver_ip_output.stdout_lines[0] | regex_search('(?<=inet\\s)\\d+(\\.\\d+){3}') }}"
-      when: cgserver_ip_output.stdout_lines | length > 0
-
-    - name: Fail if cgserver IP not found
-      fail:
-        msg: "Failed to get cgserver IP"
-      when: cgserver_ip_output.failed
+        cgserver_ip: "{{ cgserver_ip_output.stdout.split('/')[0] }}"
+        
+    - name: Debug cgserverip
+      debug:
+        var: cgserver_ip
 
 
     - name: Get ddosserver IP
-      command: kubectl exec -n ddos ddosserver -- ip addr show eth1 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+      shell: "kubectl exec -n ddos ddosserver -- ip addr show eth1 | awk '/inet / {gsub(/\\/\\/[0-9]+/, \"\", $2); print $2}'"
       register: ddosserver_ip_output
       changed_when: false
       ignore_errors: yes
 
     - name: Set ddosserver IP as a fact
       set_fact:
-        ddosserver_ip: "{{ ddosserver_ip_output.stdout_lines[0] | regex_search('(?<=inet\\s)\\d+(\\.\\d+){3}') }}"
-      when: ddosserver_ip_output.stdout_lines | length > 0
+        ddosserver_ip: "{{ ddosserver_ip_output.stdout.split('/')[0] }}"
+        
+    - name: Debug ddosserverip
+      debug:
+        var: ddosserver_ip
 
-    - name: Fail if ddosserver IP not found
-      fail:
-        msg: "Failed to get ddosserver IP"
-      when: ddosserver_ip_output.failed
+
 
 
     - name: "Configure {{ item.name }}"
