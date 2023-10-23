@@ -1,0 +1,48 @@
+---
+- name: Topology Configuration
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Configure cgclient
+      command: kubectl exec -it -n ddos cgclient1 -- python3 cgclient1-config.py
+
+    - name: Configure cgserver
+      command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
+
+    - name: Configure ddosclient
+      command: kubectl exec -it -n ddos ddosclient1 -- python3 ddosclient1-config.py
+
+    - name: Configure ddosserver
+      command: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
+
+    - name: Get cgserver IP
+      command: kubectl exec -n ddos cgserver -- ip addr show eth1 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+      register: cgserver_ip_output
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Set cgserver IP as a fact
+      set_fact:
+        cgserver_ip: "{{ cgserver_ip_output.stdout_lines[0] | regex_search('(?<=inet\\s)\\d+(\\.\\d+){3}') }}"
+      when: cgserver_ip_output.stdout_lines | length > 0
+
+    - name: Fail if cgserver IP not found
+      fail:
+        msg: "Failed to get cgserver IP"
+      when: cgserver_ip_output.failed
+
+    - name: Get ddosserver IP
+      command: kubectl exec -n ddos ddosserver -- ip addr show eth1 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+      register: ddosserver_ip_output
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Set ddosserver IP as a fact
+      set_fact:
+        ddosserver_ip: "{{ ddosserver_ip_output.stdout_lines[0] | regex_search('(?<=inet\\s)\\d+(\\.\\d+){3}') }}"
+      when: ddosserver_ip_output.stdout_lines | length > 0
+
+    - name: Fail if ddosserver IP not found
+      fail:
+        msg: "Failed to get ddosserver IP"
+      when: ddosserver_ip_output.failed
