@@ -3,16 +3,24 @@
   hosts: localhost
   gather_facts: no
   vars:
-    cgclients:
-      - name: cgclient1
-        pod: cgclient1
-
-    ddosclients:
-      - name: ddosclient1
-        pod: ddosclient1
-
-
+    cgclients: []
+    ddosclients: []
+    
   tasks:
+    - name: Include client counts
+      include_vars:
+        file: clients_number.yaml
+  
+    - name: Crear cgclients
+      set_fact:
+        cgclients: "{{ cgclients + [{'name': 'cgclient' ~ item, 'pod': 'cgclient' ~ item}] }}"
+      loop: "{{ range(1, cg_count + 1)|list }}"
+    
+    - name: Crear ddosclients
+      set_fact:
+        ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
+      loop: "{{ range(1, ddos_count + 1)|list }}"
+        
     - name: Configure cgserver
       command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
     - name: Configure ddosserver
@@ -49,17 +57,21 @@
         var: ddosserver_ip
 
 
-
-
-    - name: "Configure {{ item.name }}"
-      command: kubectl exec -it -n ddos {{ item.pod }} -- python3 {{ item.name }}-config.py
+    - name: "Configure {{ client.name }}"
+      command: kubectl exec -it -n ddos {{ client.pod }} -- python3 {{ client.name }}-config.py
       loop: "{{ cgclients + ddosclients }}"
+      loop_control:
+        loop_var: client
 
 
-    - name: Set environment variables for cgclient
-      command: kubectl exec -it -n ddos {{ item.pod }} -- /bin/bash -c "export cgserver=\"{{ cgserver_ip }}\""
-      loop: "{{ cgclients }}"
 
-    - name: Set environment variables for ddosclient
-      command: kubectl exec -it -n ddos {{ item.pod }} -- /bin/bash -c "export ddosserver=\"{{ ddosserver_ip }}\""
-      loop: "{{ ddosclients }}"
+    - name: Create ConfigMap YAML
+      command: kubectl create configmap my-environment --from-literal=cgserver=10.0.25.1 --from-literal=ddosserver=10.0.24.1 --namespace=ddos --dry-run=client -o yaml
+      register: configmap_yaml
+      changed_when: false
+    
+    - name: Apply ConfigMap
+      command: kubectl apply -f -
+      args:
+        stdin: "{{ configmap_yaml.stdout }}"
+      when: configmap_yaml.stdout is defined

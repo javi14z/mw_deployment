@@ -2,11 +2,28 @@
 - name: Execute task in pods
   hosts: controller
   gather_facts: no
+  vars:
+    cgclients: []
+    ddosclients: []
+
   tasks:
     - name: Include the client generation playbook
       include_tasks: generate_clients.yml
+  
+    - name: Include client counts
+      include_vars:
+        file: clients_number.yaml
+  
+    - name: Crear cgclients
+      set_fact:
+        cgclients: "{{ cgclients + [{'name': 'cgclient' ~ item, 'pod': 'cgclient' ~ item}] }}"
+      loop: "{{ range(1, cg_count + 1)|list }}"
     
-
+    
+    - name: Crear ddosclients
+      set_fact:
+        ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
+      loop: "{{ range(1, ddos_count + 1)|list }}"
     - name: Execute ACROSSfile_transfer
       command: kubectl exec -it {{ item.pod }} -- python3 ACROSSfile_transfer.py
       loop: "{{ cgclients }}"
