@@ -1,0 +1,16 @@
+---
+- name: Generate Clients
+  hosts: localhost
+  gather_facts: no
+  vars:
+    num_cgclients: 1
+    num_ddosclients: 1
+
+  tasks:
+    - name: Generate cgclients
+      set_fact:
+        cgclients: "{% set num_cgclients = num_cgclients | int %} [{ 'name': 'cgclient' ~ item, 'pod': 'cgclient' ~ item } for item in range(1, num_cgclients + 1) ]"
+
+    - name: Generate ddosclients
+      set_fact:
+        ddosclients: "{% set num_ddosclients = num_ddosclients | int %} [{ 'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item } for item in range(1, num_ddosclients + 1) ]"

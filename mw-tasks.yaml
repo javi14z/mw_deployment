@@ -1,0 +1,20 @@
+---
+- name: Execute task in pods
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Include the client generation playbook
+      include: generate_clients.yml
+    
+
+    - name: Execute ACROSSfile_transfer
+      command: kubectl exec -it {{ item.pod }} -- python3 ACROSSfile_transfer.py
+      loop: "{{ cgclients }}"
+      async: 3600 # Define task time
+      poll: 0
+
+    - name: Execute hping3.sh
+      command: kubectl exec -it {{ item.pod }} -- ./hping3.sh
+      loop: "{{ ddosclients }}"
+      async: 3600 # Define task time
+      poll: 0

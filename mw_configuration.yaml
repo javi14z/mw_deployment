@@ -3,17 +3,14 @@
   hosts: localhost
   gather_facts: no
   tasks:
-    - name: Configure cgclient
-      command: kubectl exec -it -n ddos cgclient1 -- python3 cgclient1-config.py
+    - name: Include the client generation playbook
+      include: generate_clients.yml
 
     - name: Configure cgserver
       command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
-
-    - name: Configure ddosclient
-      command: kubectl exec -it -n ddos ddosclient1 -- python3 ddosclient1-config.py
-
     - name: Configure ddosserver
       command: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
+
 
     - name: Get cgserver IP
       command: kubectl exec -n ddos cgserver -- ip addr show eth1 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
@@ -31,6 +28,7 @@
         msg: "Failed to get cgserver IP"
       when: cgserver_ip_output.failed
 
+
     - name: Get ddosserver IP
       command: kubectl exec -n ddos ddosserver -- ip addr show eth1 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
       register: ddosserver_ip_output
@@ -46,3 +44,18 @@
       fail:
         msg: "Failed to get ddosserver IP"
       when: ddosserver_ip_output.failed
+
+
+    - name: "Configure {{ item.name }}"
+      command: kubectl exec -it -n ddos {{ item.pod }} -- python3 {{ item.name }}-config.py
+      loop: "{{ cgclients + ddosclients }}"
+
+
+    - name: Set environment variables for cgclient
+      command: kubectl exec -it -n ddos {{ item.pod }} -- export cgserver="{{ cgserver_ip }}"
+      loop: "{{ cgclients }}"
+
+    - name: Set environment variables for ddosclient
+      command: kubectl exec -it -n ddos {{ item.pod }} -- export ddosserver="{{ ddosserver_ip }}"
+      loop: "{{ ddosclients }}"
+
