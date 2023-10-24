@@ -7,10 +7,6 @@
     ddosclients: []
     
   tasks:
-    - name: Create namespace
-      command: kne create /home/mw/kne/examples/cisco/conversion/Topologias/ddos/prueba.yaml
-      
-      
     - name: Include client counts
       include_vars:
         file: clients_number.yaml
@@ -62,35 +58,9 @@
     - name: Debug ddosserverip
       debug:
         var: ddosserver_ip
-
-
-    
-    - name: Create ConfigMap YAML
-      command: kubectl create configmap my-environment --from-literal=cgserver={{ cgserver_ip }} --from-literal=ddosserver={{ ddosserver_ip }} --namespace=default --dry-run=client -o yaml
-      register: configmap_yaml
-      changed_when: false
-
-    
-    - name: Apply ConfigMap
-      command: kubectl apply -f -
-      args:
-        stdin: "{{ configmap_yaml.stdout }}"
-      when: configmap_yaml.stdout is defined 
       
       
     
-    - name: Delete namespace
-      command: kne delete /home/mw/kne/examples/cisco/conversion/Topologias/ddos/prueba.yaml
-      
-    - name: Pause 10 sec
-      pause:
-        seconds: 10
-    
-    - name: Create namespace
-      command: kne create /home/mw/kne/examples/cisco/conversion/Topologias/ddos/prueba.yaml
-
-      
-      
     - name: Configure cgserver
       command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
     - name: Configure ddosserver
@@ -99,8 +69,13 @@
     - name: "Configure {{ client.pod }}"
       command: kubectl exec -it -n ddos {{ client.pod }} -- python3 {{ client.name }}-config.py
       loop: "{{ cgclients + ddosclients }}"
-      loop_control:
-        loop_var: client
+        
+        
+    - name: Generate custom .bashrc 
+      command: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc'
+      loop: "{{ cgclients + ddosclients }}"
+        
+
 
 
 
