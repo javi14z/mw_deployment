@@ -7,24 +7,32 @@
     ddosclients: []
     
   tasks:
+    - name: Create namespace
+      command: kne create /home/mw/kne/examples/cisco/conversion/Topologias/ddos/prueba.yaml
+      
+      
     - name: Include client counts
       include_vars:
         file: clients_number.yaml
-  
-    - name: Crear cgclients
+        
+    - name: Create cgclients
       set_fact:
         cgclients: "{{ cgclients + [{'name': 'cgclient' ~ item, 'pod': 'cgclient' ~ item}] }}"
       loop: "{{ range(1, cg_count + 1)|list }}"
-    
-    - name: Crear ddosclients
+
+    - name: Create ddosclients
       set_fact:
         ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
       loop: "{{ range(1, ddos_count + 1)|list }}"
+
+
         
     - name: Configure cgserver
       command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
+      
     - name: Configure ddosserver
       command: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
+
 
 
     - name: Get cgserver IP
@@ -41,7 +49,6 @@
       debug:
         var: cgserver_ip
 
-
     - name: Get ddosserver IP
       shell: "kubectl exec -n ddos ddosserver -- ip addr show eth1 | awk '/inet / {gsub(/\\/\\/[0-9]+/, \"\", $2); print $2}'"
       register: ddosserver_ip_output
@@ -57,7 +64,39 @@
         var: ddosserver_ip
 
 
-    - name: "Configure {{ client.name }}"
+    
+    - name: Create ConfigMap YAML
+      command: kubectl create configmap my-environment --from-literal=cgserver={{ cgserver_ip }} --from-literal=ddosserver={{ ddosserver_ip }} --namespace=default --dry-run=client -o yaml
+      register: configmap_yaml
+      changed_when: false
+
+    
+    - name: Apply ConfigMap
+      command: kubectl apply -f -
+      args:
+        stdin: "{{ configmap_yaml.stdout }}"
+      when: configmap_yaml.stdout is defined 
+      
+      
+    
+    - name: Delete namespace
+      command: kne delete /home/mw/kne/examples/cisco/conversion/Topologias/ddos/prueba.yaml
+      
+    - name: Pause 10 sec
+      pause:
+        seconds: 10
+    
+    - name: Create namespace
+      command: kne create /home/mw/kne/examples/cisco/conversion/Topologias/ddos/prueba.yaml
+
+      
+      
+    - name: Configure cgserver
+      command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
+    - name: Configure ddosserver
+      command: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
+
+    - name: "Configure {{ client.pod }}"
       command: kubectl exec -it -n ddos {{ client.pod }} -- python3 {{ client.name }}-config.py
       loop: "{{ cgclients + ddosclients }}"
       loop_control:
@@ -65,13 +104,3 @@
 
 
 
-    - name: Create ConfigMap YAML
-      command: kubectl create configmap my-environment --from-literal=cgserver=10.0.25.1 --from-literal=ddosserver=10.0.24.1 --namespace=ddos --dry-run=client -o yaml
-      register: configmap_yaml
-      changed_when: false
-    
-    - name: Apply ConfigMap
-      command: kubectl apply -f -
-      args:
-        stdin: "{{ configmap_yaml.stdout }}"
-      when: configmap_yaml.stdout is defined
