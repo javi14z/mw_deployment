@@ -69,11 +69,21 @@
     - name: "Configure {{ client.pod }}"
       command: kubectl exec -it -n ddos {{ client.pod }} -- python3 {{ client.name }}-config.py
       loop: "{{ cgclients + ddosclients }}"
+      loop_control:
+        loop_var: client
         
         
     - name: Generate custom .bashrc 
       command: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc'
       loop: "{{ cgclients + ddosclients }}"
+      loop_control:
+        loop_var: client
+        
+    - name: Source.bashrc 
+      command: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'source /root/.bashrc'
+      loop: "{{ cgclients + ddosclients }}"
+      loop_control:
+        loop_var: client
         
 
 

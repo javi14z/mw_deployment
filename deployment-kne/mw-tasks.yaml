@@ -19,19 +19,85 @@
         cgclients: "{{ cgclients + [{'name': 'cgclient' ~ item, 'pod': 'cgclient' ~ item}] }}"
       loop: "{{ range(1, cg_count + 1)|list }}"
     
-    
     - name: Crear ddosclients
       set_fact:
         ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
       loop: "{{ range(1, ddos_count + 1)|list }}"
+
+
+    #------------------------------Tasks execution---------------------------------------------------------------
+    #cgserver:
+    - name: Start ACROSSserver.py
+      command: kubectl exec -it cgserver -- python3 ACROSSserver.py &
+    
+    #ddosserver:
+    - name: Start ngnix
+      command: kubectl exec -it ddosserver -- nginx -g 'daemon off;' & disown
+
+    - name: Start bind9
+      command: kubectl exec -it ddosserver -- service bind9 start
+    
+    #Cglient:
     - name: Execute ACROSSfile_transfer
       command: kubectl exec -it {{ item.pod }} -- python3 ACROSSfile_transfer.py
       loop: "{{ cgclients }}"
-      async: 3600 # Define task time
+      async: 3600 
       poll: 0
 
+    - name: Execute ACROSSconsuming_video.py
+      command: kubectl exec -it {{ item.pod }} -- python3 ACROSSconsuming_video.py
+      loop: "{{ cgclients }}"
+      async: 3600 
+      poll: 0
+    
+    - name: Execute ACROSSshorts.py
+      command: kubectl exec -it {{ item.pod }} -- python3 ACROSSshorts.py
+      loop: "{{ cgclients }}"
+      async: 3600 
+      poll: 0
+
+    - name: Execute ACROSSclient.py
+      command: kubectl exec -it {{ item.pod }} -- python3 ACROSSclient.py
+      loop: "{{ cgclients }}"
+      async: 3600 
+      poll: 0
+
+    #ddosclient:
     - name: Execute hping3.sh
       command: kubectl exec -it {{ item.pod }} -- ./hping3.sh
       loop: "{{ ddosclients }}"
-      async: 3600 # Define task time
+      async: 3600 
       poll: 0
+
+    - name: Execute vegeta.sh
+      command: kubectl exec -it {{ item.pod }} -- ./vegeta.sh
+      loop: "{{ ddosclients }}"
+      async: 3600 
+      poll: 0
+  
+    - name: Execute quick_scapy
+      command: kubectl exec -it {{ item.pod }} -- python3 quic-scapy/scapy_demo.py
+      loop: "{{ ddosclients }}"
+      async: 3600 
+      poll: 0
+
+    - name: Execute dns_scapy
+      command: kubectl exec -it {{ item.pod }} -- python3 dns_scapy.py
+      loop: "{{ ddosclients }}"
+      async: 3600 
+      poll: 0
+
+    # - name: Execute water_torture
+    #   command: kubectl exec -it {{ item.pod }} -- go run DNSWaterTorture/watertorture.go -count 100 -s ddosserver -t ddosserver
+    #   loop: "{{ ddosclients }}"
+    #   async: 3600 
+    #   poll: 0
+
+    # - name: Execute dns_proxy
+    #   command: kubectl exec -it {{ item.pod }} -- /home/cognet/dnscrypt-proxy-linux_x86_64-2.1.5/config.sh
+    #   loop: "{{ ddosclients }}"
+    #   async: 3600 
+    #   poll: 0
+
+
+
