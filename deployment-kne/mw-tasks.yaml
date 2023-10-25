@@ -28,14 +28,14 @@
     #------------------------------Tasks execution---------------------------------------------------------------
     #cgserver:
     - name: Start ACROSSserver.py
-      command: kubectl exec -it cgserver -- python3 ACROSSserver.py &
+      command: kubectl exec cgserver -- python3 ACROSSserver.py &
     
     #ddosserver:
     - name: Start ngnix
-      command: kubectl exec -it ddosserver -- nginx -g 'daemon off;' & disown
+      command: kubectl exec ddosserver -- nginx -g 'daemon off;' & disown
 
     - name: Start bind9
-      command: kubectl exec -it ddosserver -- service bind9 start
+      command: kubectl exec ddosserver -- service bind9 start
     
     #Cglient:
     - name: Execute ACROSSfile_transfer
