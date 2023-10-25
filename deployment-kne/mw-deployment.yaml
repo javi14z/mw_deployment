@@ -1,5 +1,5 @@
 ---
-- name: Topology Configuration
+- name: Topology Deploy
   hosts: localhost
   gather_facts: no
   vars:
@@ -22,7 +22,10 @@
       loop: "{{ range(1, ddos_count + 1)|list }}"
 
 
+    - name: Deploy topology
+      command: kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
         
+
     - name: Configure cgserver
       command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
       
@@ -85,7 +88,3 @@
       loop_control:
         loop_var: client
         
-
-
-
-

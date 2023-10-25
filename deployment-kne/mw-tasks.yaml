@@ -1,15 +1,13 @@
 ---
 - name: Execute task in pods
-  hosts: controller
+  hosts: localhost
   gather_facts: no
   vars:
     cgclients: []
     ddosclients: []
 
   tasks:
-    - name: Include the client generation playbook
-      include_tasks: generate_clients.yml
-  
+    #------------------------------Deployment--------------------------------------------------------------
     - name: Include client counts
       include_vars:
         file: clients_number.yaml
@@ -23,81 +21,87 @@
       set_fact:
         ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
       loop: "{{ range(1, ddos_count + 1)|list }}"
+      
 
 
     #------------------------------Tasks execution---------------------------------------------------------------
     #cgserver:
     - name: Start ACROSSserver.py
-      command: kubectl exec cgserver -- python3 ACROSSserver.py &
+      command: kubectl exec -n ddos cgserver -- python3 ACROSSserver.py 
+      async: 3600
+      poll: 0
+
     
     #ddosserver:
     - name: Start ngnix
-      command: kubectl exec ddosserver -- nginx -g 'daemon off;' & disown
+      command: kubectl exec -n ddos ddosserver -- nginx -g 'daemon off;'
+      async: 3600
+      poll: 0
 
     - name: Start bind9
-      command: kubectl exec ddosserver -- service bind9 start
-    
+      command: kubectl exec -n ddos ddosserver -- service bind9 start
+      
+      
     #Cglient:
     - name: Execute ACROSSfile_transfer
-      command: kubectl exec -it {{ item.pod }} -- python3 ACROSSfile_transfer.py
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
 
     - name: Execute ACROSSconsuming_video.py
-      command: kubectl exec -it {{ item.pod }} -- python3 ACROSSconsuming_video.py
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
     
     - name: Execute ACROSSshorts.py
-      command: kubectl exec -it {{ item.pod }} -- python3 ACROSSshorts.py
+      command: kubectl exec -n ddos{{ item.pod }} -- python3 ACROSSshorts.py
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
-
+      
     - name: Execute ACROSSclient.py
-      command: kubectl exec -it {{ item.pod }} -- python3 ACROSSclient.py
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSclient.py
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
-
+      
+      
     #ddosclient:
     - name: Execute hping3.sh
-      command: kubectl exec -it {{ item.pod }} -- ./hping3.sh
+      command: kubectl exec -n ddos {{ item.pod }} -- ./hping3.sh
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
 
     - name: Execute vegeta.sh
-      command: kubectl exec -it {{ item.pod }} -- ./vegeta.sh
+      command: kubectl exec -n ddos {{ item.pod }} -- ./vegeta.sh
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
   
-    - name: Execute quick_scapy
-      command: kubectl exec -it {{ item.pod }} -- python3 quic-scapy/scapy_demo.py
-      loop: "{{ ddosclients }}"
-      async: 3600 
-      poll: 0
+#    - name: Execute quick_scapy
+#      command: kubectl exec -n ddos {{ item.pod }} -- python3 quic-scapy/scapy_demo.py
+#      loop: "{{ ddosclients }}"
+#      async: 3600 
+#      poll: 0
+#
+#    - name: Execute dns_scapy
+#      command: kubectl exec -n ddos {{ item.pod }} -- python3 dns_scapy.py
+#      loop: "{{ ddosclients }}"
+#      async: 3600 
+#      poll: 0
 
-    - name: Execute dns_scapy
-      command: kubectl exec -it {{ item.pod }} -- python3 dns_scapy.py
-      loop: "{{ ddosclients }}"
-      async: 3600 
-      poll: 0
-
-    # - name: Execute water_torture
-    #   command: kubectl exec -it {{ item.pod }} -- go run DNSWaterTorture/watertorture.go -count 100 -s ddosserver -t ddosserver
-    #   loop: "{{ ddosclients }}"
-    #   async: 3600 
-    #   poll: 0
-
-    # - name: Execute dns_proxy
-    #   command: kubectl exec -it {{ item.pod }} -- /home/cognet/dnscrypt-proxy-linux_x86_64-2.1.5/config.sh
-    #   loop: "{{ ddosclients }}"
-    #   async: 3600 
-    #   poll: 0
-
-
-
+#     - name: Execute water_torture
+#       command: kubectl exec -it {{ item.pod }} -- go run DNSWaterTorture/watertorture.go -count 100 -s ddosserver -t ddosserver
+#       loop: "{{ ddosclients }}"
+#       async: 3600 
+#       poll: 0
+#
+#     - name: Execute dns_proxy
+#       command: kubectl exec -it {{ item.pod }} -- /home/cognet/dnscrypt-proxy-linux_x86_64-2.1.5/config.sh
+#       loop: "{{ ddosclients }}"
+#       async: 3600 
+#       poll: 0
+    

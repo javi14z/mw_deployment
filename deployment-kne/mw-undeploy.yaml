@@ -1,0 +1,9 @@
+---
+- name: Topology Undeploy
+  hosts: localhost
+  gather_facts: no
+    
+  tasks:
+    - name: Undeploy topology
+      command: kne delete ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
+        
