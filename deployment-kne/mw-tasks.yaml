@@ -7,7 +7,7 @@
     ddosclients: []
 
   tasks:
-    #------------------------------Deployment--------------------------------------------------------------
+    #------------------------------Configuration--------------------------------------------------------------
     - name: Include client counts
       include_vars:
         file: clients_number.yaml
@@ -21,6 +21,18 @@
       set_fact:
         ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
       loop: "{{ range(1, ddos_count + 1)|list }}"
+    
+    - name: Include server IPs
+      include_vars:
+        file: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_k8s/deployment-kne/server_ips.yaml
+
+    - name: Debug loaded server IPs
+      debug:
+        var: ddosserver_ip
+
+    - name: Debug loaded server IPs
+      debug:
+        var: cgserver_ip
       
 
 
@@ -56,16 +68,17 @@
       poll: 0
     
     - name: Execute ACROSSshorts.py
-      command: kubectl exec -n ddos{{ item.pod }} -- python3 ACROSSshorts.py
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
       
     - name: Execute ACROSSclient.py
-      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSclient.py
+      command: kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
+
       
       
     #ddosclient:
@@ -105,3 +118,6 @@
 #       async: 3600 
 #       poll: 0
     
+
+
+

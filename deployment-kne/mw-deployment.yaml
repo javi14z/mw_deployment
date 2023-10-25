@@ -61,6 +61,14 @@
     - name: Debug ddosserverip
       debug:
         var: ddosserver_ip
+        
+        
+    - name: Store server IPs in a file
+      copy:
+        content: |
+          ddosserver_ip: "{{ ddosserver_ip }}"
+          cgserver_ip: "{{ cgserver_ip }}"
+        dest: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_k8s/deployment-kne/server_ips.yaml
       
       
     
@@ -88,3 +96,4 @@
       loop_control:
         loop_var: client
         
+
