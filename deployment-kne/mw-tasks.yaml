@@ -62,19 +62,19 @@
       poll: 0
 
     - name: Execute ACROSSconsuming_video.py
-      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py 3600 #set time
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
     
     - name: Execute ACROSSshorts.py
-      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py 3600 #set time
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
       
     - name: Execute ACROSSclient.py
-      command: kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py
+      command: kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py 10000 #set multiplier
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
@@ -105,7 +105,7 @@
 #      loop: "{{ ddosclients }}"
 #      async: 3600 
 #      poll: 0
-
+#
 #     - name: Execute water_torture
 #       command: kubectl exec -it {{ item.pod }} -- go run DNSWaterTorture/watertorture.go -count 100 -s ddosserver -t ddosserver
 #       loop: "{{ ddosclients }}"
@@ -117,7 +117,4 @@
 #       loop: "{{ ddosclients }}"
 #       async: 3600 
 #       poll: 0
-    
-
-
 
