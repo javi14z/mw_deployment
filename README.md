@@ -20,8 +20,8 @@ Throughout the document, we will describe the way of using the different playboo
 The first thing to do is adjust in this file the number of clients that we want to deploy for traffic generation (**ddosclient** and **cgclient**). This file will be used by the different playbooks to display the exact number of clients:
 
 We can deploy two types of clients depending on the traffic we want to generate in the experiment:
-- Simulation of Elephant and Cheetah Network Flows (cg_count)
-- Simulation of a Variety of DDoS Attacks (ddos_count)
+- Simulation of Elephant and Cheetah Network Flows (**cg_count**)
+- Simulation of a Variety of DDoS Attacks (**ddos_count**)
 
     ![image1](https://github.com/javi14z/mw_k8s/blob/main/images/image1.png)
 
