@@ -17,7 +17,6 @@ Throughout the document, we will describe the way of using the different playboo
 ## Usage
 
 ### - clients_number.yaml
-
 In this file we decide the number of clients for traffic generation (**ddosclient** and **cgclient**):
 ![image1](https://github.com/javi14z/mw_k8s/blob/main/images/image1.png)
 
