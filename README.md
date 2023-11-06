@@ -2,7 +2,7 @@
 
 ## Description
 
-Using **Ansible** we have automated the deployment of the different Docker images described in test case 3.5 inside the **Kne** host server (192.168.159.53) of the laboratory. Ansible is already installed inside the server, although the installation method is:
+Using **Ansible** we have automated the deployment of the different Docker images (described in test case 3.5) inside the **Kne** host server (192.168.159.53) of the laboratory. Ansible is already installed inside the server, although the installation method is:
 
 ```
 $ sudo apt install ansible
