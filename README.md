@@ -31,6 +31,7 @@ $ ansible-playbook mw-undeploy.yaml
 In this file we decide the number of clients for traffic generation (ddosclient and cgclient).
 
 -Simulation of Elephant and Cheetah Network Flows (cglient)
+ 
 -Simulation of a Variety of DDoS Attacks (ddosclient)
 
 ![image1](https://github.com/javi14z/mw_k8s/blob/main/images/image1.png)
