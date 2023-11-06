@@ -63,9 +63,24 @@ In this file we have to declare the differents programms that we are going to ex
 **Note** : The configuration of the topology routers takes some time to be operational. If the playbook runs too soon, the traffic of some tasks may not pass through the topology correctly.
 
 #### The programs and scripts that have been implemented are the following:
+##### **Cgserver:**
+- ACROSSserver.py:
+
+##### **Ddosserver:**
+- ngnix:
+- bind9:
+
+##### **Cglient:**
 - ACROSSfile_transfer.py:
 - ACROSSconsuming_video.py:
+- ACROSSshorts.py:
+- ACROSSclient.py:
 
+##### **Ddosclient:**
+- hping3.sh:
+- vegeta.sh:
+- water_torture:
+- dns_proxy:
 
 
 
