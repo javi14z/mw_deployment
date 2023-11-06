@@ -64,11 +64,14 @@ In this file we have to declare the differents programms that we are going to ex
 
 #### The programs and scripts that have been implemented are the following:
 ##### **Cgserver:**
-- ACROSSserver.py:
+- ACROSSserver.py: 
+    We use the sockets library in Python which provides low-level access to network interfaces. With this we have created a simple server that listens for bursts of traffic from clients.
 
 ##### **Ddosserver:**
 - ngnix:
+    We have created a standard HTTP/2 Server server: NGINX. The goal is to serve a basic "Hello World" web page located at the root URI. This is the URI that clients will use to perform the HTTP flood attack.
 - bind9:
+
 
 ##### **Cglient:**
 - ACROSSfile_transfer.py:
