@@ -33,7 +33,7 @@ In this file we decide the number of clients for traffic generation (ddosclient 
 -Simulation of Elephant and Cheetah Network Flows (cglient)
 -Simulation of a Variety of DDoS Attacks (ddosclient)
 
-![image1](images\image1.png)
+![image1](https://github.com/javi14z/mw_k8s/blob/main/images/image1.png)
 
 ### mw-deployment.yaml
 
@@ -47,7 +47,7 @@ the operation of the programs.
 In this file we have to declare the differents programms that we are going to execute in the pods generated. Inside the file you can comment with # the tasks 
 that you don't want to be executed. You can also configure the execution time of each task and other options:
 
-![image2](images\image2.png)
+![image2](https://github.com/javi14z/mw_k8s/blob/main/images/image2.png)
 
 ### mw-undeploy.yaml
 
