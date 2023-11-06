@@ -70,19 +70,26 @@ In this file we have to declare the differents programms that we are going to ex
 ##### **Ddosserver:**
 - ngnix:
     We have created a standard HTTP/2 Server server: NGINX. The goal is to serve a basic "Hello World" web page located at the root URI. This is the URI that clients will use to perform the HTTP flood attack.
+
 - bind9:
 
 
 ##### **Cglient:**
 - ACROSSfile_transfer.py:
+
 - ACROSSconsuming_video.py:
+
 - ACROSSshorts.py:
+
 - ACROSSclient.py:
 
 ##### **Ddosclient:**
 - hping3.sh:
+
 - vegeta.sh:
+
 - water_torture:
+
 - dns_proxy:
 
 
