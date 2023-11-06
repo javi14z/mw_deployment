@@ -23,7 +23,7 @@ We can deploy two types of clients depending on the traffic we want to generate 
 - Simulation of Elephant and Cheetah Network Flows (cg_count)
 - Simulation of a Variety of DDoS Attacks (ddos_count)
 
-![image1](https://github.com/javi14z/mw_k8s/blob/main/images/image1.png)
+    ![image1](https://github.com/javi14z/mw_k8s/blob/main/images/image1.png)
 
 ### - mw-deployment.yaml
 ```
