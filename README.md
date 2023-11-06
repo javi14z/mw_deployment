@@ -12,7 +12,7 @@ Throughout the document, we will describe the way of using the different playboo
 
 ## Scenario
 
-
+![scenario](https://github.com/javi14z/mw_k8s/blob/main/images/Traffic_Generation.png)
 
 ## Usage
 
