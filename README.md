@@ -16,7 +16,7 @@ Throughout the document, we will describe the way of using the different playboo
 
 ## Usage
 
-### clients_number.yaml
+### - clients_number.yaml
 
 In this file we decide the number of clients for traffic generation (**ddosclient** and **cgclient**):
 ![image1](https://github.com/javi14z/mw_k8s/blob/main/images/image1.png)
@@ -26,7 +26,7 @@ In this file we decide the number of clients for traffic generation (**ddosclien
 -Simulation of a Variety of DDoS Attacks (ddos_count)
 
 
-### mw-deployment.yaml
+### - mw-deployment.yaml
 ```
 $ ansible-playbook mw-deployment.yaml
 ```
@@ -43,7 +43,7 @@ $ kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
 This is the configuration file that Kne uses to create the topology through which the traffic will pass. Currently the topology configuration has support for 10 clients of each type.
 
 
-### mw-undeploy.yaml
+### - mw-undeploy.yaml
 ```
 $ ansible-playbook mw-undeploy.yaml
 ```
@@ -52,7 +52,7 @@ When we run this playbook, first of all we are going to save all the logs genera
 
 **Note** : The collection of logs before their deletion is not yet implemented
 
-### mw-tasks.yaml
+### - mw-tasks.yaml
 ```
 $ ansible-playbook mw-tasks.yaml
 ```
@@ -64,6 +64,8 @@ In this file we have to declare the differents programms that we are going to ex
 **Note** : The configuration of the topology routers takes some time to be operational. If the playbook runs too soon, the traffic of some tasks may not pass through the topology correctly.
 
 #### The programs and scripts that have been implemented are the following:
+- ACROSSfile_transfer.py:
+- ACROSSconsuming_video.py:
 
 
 
