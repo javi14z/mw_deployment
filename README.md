@@ -103,7 +103,8 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     This Python script automates the process of opening a YouTube video and simulates the user watching the video. It is designed to simulate elephant flows having a large number of users consuming a viral video on YouTube. To automate web browsing we use the Selenium library.
     - Parameters:
-        -<YT_video_URL>: set the url to a Youtube Video.
+        -<YT_video_URL>: set the url to a Youtube Video
+        
         -<viewing_time>: set the viewing time video
         
 
