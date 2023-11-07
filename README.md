@@ -82,11 +82,8 @@ In this file we have to declare the differents programms that we are going to ex
     kubectl exec -n ddos ddosserver -- service bind9 start
     ```
     We have setup a dns server using bind9. The server is waiting to receive new queries through port 53.
-    - Features:
-          EDNS
-          DNSSEC
-    - Next features:
-          DOH support
+    - Features: EDNS,DNSSEC
+    - Next features: DOH support
 
 ##### **Cglient:**
 - ACROSSfile_transfer.py:
@@ -95,6 +92,7 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     To simulate elephant flows, we have used WGET to generate file transfers. With this, we begin to download a large video file from a website.
     - Parameters:
+        
         -<large_file_url>: set the url to dowload the large file
 
 - ACROSSconsuming_video.py:
@@ -103,8 +101,9 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     This Python script automates the process of opening a YouTube video and simulates the user watching the video. It is designed to simulate elephant flows having a large number of users consuming a viral video on YouTube. To automate web browsing we use the Selenium library.
     - Parameters:
+
         -<YT_video_URL>: set the url to a Youtube Video
-        
+
         -<viewing_time>: set the viewing time video
         
 
@@ -114,6 +113,7 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     This Python script automates the process of opening YouTube Shorts and simulating the user scrolling through the Shorts feed at a random pace. It is designed to simulate cheetah flow, where a user scrolls through YouTube Shorts and videos load lazily as they show up in the browser viewport. We also use  the Selenium libraryto automate the procces.
     - Parameters:
+
         -<viewing_time>: set the viewing time of Youtube shorts
 
 - ACROSSclient.py:
@@ -122,6 +122,7 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     This Python script generates short-lived bursts of high traffic, creating 'cheetah flows'. To simulate this behavior, random spikes of data are sent to the server during communication. This can be achieved by sending a sudden surge of packets over a short duration.
     - Parameters:
+        
         -<multiplier>: adjust the multiplier as needed.
 
 ##### **Ddosclient:**
