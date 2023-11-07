@@ -64,20 +64,20 @@ In this file we have to declare the differents programms that we are going to ex
 
 #### The programs and scripts that have been implemented are the following:
 ##### **Cgserver:**
-- **ACROSSserver.py:**
+- ACROSSserver.py:
     ```
     kubectl exec -n ddos cgserver -- python3 ACROSSserver.py 
     ```
     We use the sockets library in Python, which offers low-level access to network interfaces. Using this library, we have developed a straightforward server that listens for bursts of traffic from clients.
 
 ##### **Ddosserver:**
-- **ngnix:**
+- ngnix:
     ```
     kubectl exec -n ddos ddosserver -- nginx -g 'daemon off;' 
     ```
     We have set up a standard HTTP/2 server using NGINX, with the aim of serving a basic 'Hello World' web page at the root URI. This URI will be used by clients to carry out the HTTP flood attack
 
-- **bind9:**
+- bind9:
     ```
     kubectl exec -n ddos ddosserver -- service bind9 start
     ```
@@ -86,7 +86,7 @@ In this file we have to declare the differents programms that we are going to ex
     - Next features: DOH support
 
 ##### **Cglient:**
-- **ACROSSfile_transfer.py:**
+- ACROSSfile_transfer.py:
     ```
     kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py <large_file_url> 
     ```
@@ -95,7 +95,7 @@ In this file we have to declare the differents programms that we are going to ex
         
         -<large_file_url>: set the url to dowload the large file
 
-- **ACROSSconsuming_video.py:**
+- ACROSSconsuming_video.py:
     ```
     kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py <YT_video_URL> <viewing_time>
     ```
@@ -106,7 +106,7 @@ In this file we have to declare the differents programms that we are going to ex
 
         -<viewing_time>: set the viewing time video
         
-- **ACROSSshorts.py:**
+- ACROSSshorts.py:
     ```
     kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py <viewing_time>
     ```
@@ -115,7 +115,7 @@ In this file we have to declare the differents programms that we are going to ex
 
         -<viewing_time>: set the viewing time of Youtube shorts
 
-- **ACROSSclient.py:**
+- ACROSSclient.py:
     ```
     kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py <set_multiplier>
     ```
@@ -125,7 +125,7 @@ In this file we have to declare the differents programms that we are going to ex
         -<set_multiplier>: adjust the multiplier as needed.
 
 ##### **Ddosclient:**
-- **hping3.sh:**
+- hping3.sh:
     ```
     kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} sudo hping3 <select_mode> -c <number_of_packets> -d <packet_data_size> -S <target_ip> -w <window size> -p <select_port> --flood
     ```
@@ -144,7 +144,7 @@ In this file we have to declare the differents programms that we are going to ex
         
         -<select_port>: set the port to flood
 
-- **vegeta.sh:**
+- vegeta.sh:
     ```
     kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh <set_time>
     ```
@@ -153,7 +153,7 @@ In this file we have to declare the differents programms that we are going to ex
         
         -<set_time>: set the time of the flood.
 
-- **dns_scapy.py:**
+- dns_scapy.py:
     ```
     kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} python3 dns_scapy.py <dns_query_packets>
     ```
@@ -162,11 +162,10 @@ In this file we have to declare the differents programms that we are going to ex
         
         -<dns_query_packets>: set the number of querys.
 
-- **Quick_scapy:**
+- Quick_scapy:
     This script initiates a DDoS attackk on the server using the scapy library, simulating source IP Spoofing 
 
     **Note**: Is not yet implemented
 
-- **dns_proxy:**
-
-
+- dns_proxy:
+    This Python script initiates a DDoS attack on the server using the scapy library, simulating DNS Amplification.
