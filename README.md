@@ -34,6 +34,77 @@ With this playbook we configure and launch the different pods according to the n
 
 Inside the file also we configure the different routes of the **topology** through which all the traffic generated will pass as well as the different environment variables for the operation of the programs.
 
+- #### Example:
+
+    ```
+    PLAY [Topology Deploy] *****************************************************************************************************
+
+    TASK [Include client counts] ***********************************************************************************************
+    ok: [localhost]
+
+    TASK [Create cgclients] ****************************************************************************************************
+    ok: [localhost] => (item=1)
+
+    TASK [Create ddosclients] **************************************************************************************************
+    ok: [localhost] => (item=1)
+
+    TASK [Deploy topology] *****************************************************************************************************
+    changed: [localhost]
+
+    TASK [Configure cgserver] **************************************************************************************************
+    changed: [localhost]
+
+    TASK [Configure ddosserver] ************************************************************************************************
+    changed: [localhost]
+
+    TASK [Get cgserver IP] *****************************************************************************************************
+    ok: [localhost]
+
+    TASK [Extract IP from cgserver_ip_output] **********************************************************************************
+    ok: [localhost]
+
+    TASK [Debug cgserverip] ****************************************************************************************************
+    ok: [localhost] => {
+        "cgserver_ip": "10.0.25.1"
+    }
+
+    TASK [Get ddosserver IP] ***************************************************************************************************
+    ok: [localhost]
+
+    TASK [Set ddosserver IP as a fact] *****************************************************************************************
+    ok: [localhost]
+
+    TASK [Debug ddosserverip] **************************************************************************************************
+    ok: [localhost] => {
+        "ddosserver_ip": "10.0.24.1"
+    }
+
+    TASK [Store server IPs in a file] ******************************************************************************************
+    ok: [localhost]
+
+    TASK [Configure cgserver] **************************************************************************************************
+    changed: [localhost]
+
+    TASK [Configure ddosserver] ************************************************************************************************
+    changed: [localhost]
+
+    TASK [Configure {{ client.pod }}] ******************************************************************************************
+    changed: [localhost] => (item={'name': 'cgclient1', 'pod': 'cgclient1'})
+    changed: [localhost] => (item={'name': 'ddosclient1', 'pod': 'ddosclient1'})
+
+    TASK [Generate custom .bashrc] *********************************************************************************************
+    changed: [localhost] => (item={'name': 'cgclient1', 'pod': 'cgclient1'})
+    changed: [localhost] => (item={'name': 'ddosclient1', 'pod': 'ddosclient1'})
+
+    TASK [Source.bashrc] *******************************************************************************************************
+    changed: [localhost] => (item={'name': 'cgclient1', 'pod': 'cgclient1'})
+    changed: [localhost] => (item={'name': 'ddosclient1', 'pod': 'ddosclient1'})
+
+    PLAY RECAP *****************************************************************************************************************
+    localhost                  : ok=18   changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+    ```
+
+
 **Note** : Inside the playbook we run the following command:
 ```
 $ kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
@@ -73,7 +144,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 - bind9:
     We have setup a dns server using bind9. The server is waiting to receive new queries through port 53.
-    - Implemented features:
+    - Features:
           EDNS
           DNSSEC
     - Next features:
