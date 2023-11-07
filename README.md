@@ -34,7 +34,7 @@ With this playbook we configure and launch the different pods according to the n
 
 Inside the file also we configure the different routes of the **topology** through which all the traffic generated will pass as well as the different environment variables for the operation of the programs.
 
-- #### Example:
+- #### Use example:
 
     ```
     PLAY [Topology Deploy] *****************************************************************************************************
@@ -104,6 +104,7 @@ Inside the file also we configure the different routes of the **topology** throu
     localhost                  : ok=18   changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
     ```
 
+    This will deploy and create a new namespace (ddos) with the indicated number of pods configured
 
 **Note** : Inside the playbook we run the following command:
 ```
