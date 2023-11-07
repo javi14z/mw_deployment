@@ -158,7 +158,7 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} python3 dns_scapy.py <dns_query_packets>
     ```
-    This script initiates a DDoS attack on the server using the scapy library, simulating a DNS Amplification attack
+    This script initiates a DNS Amplification attack on the local Dns server using the scapy library.
     - Parameters:
         
         -<dns_query_packets>: set the number of querys.
