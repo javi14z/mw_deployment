@@ -128,12 +128,12 @@ In this file we have to declare the differents programms that we are going to ex
 ##### **Ddosclient:**
 - hping3.sh:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} sudo hping3 <mode> -c <number_of_packets> -d <packet_data_size> -S <target_ip> -w <window size> -p <port> --flood
+    kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} sudo hping3 <select_mode> -c <number_of_packets> -d <packet_data_size> -S <target_ip> -w <window size> -p <select_port> --flood
     ```
     This script initiates a DDoS attack on the server using hping3 with specified parameters, simulating a IP/TCP/UDP flood of traffic.
     - Parameters:
         
-        -<mode>: TCP -> leave blank, IP -> -0, ICMP -> -1, UDP -> -2 
+        -<select_mode>: TCP -> leave blank, IP -> -0, ICMP -> -1, UDP -> -2 
 
         -<number_of_packets>: set the packet number to send
         
@@ -143,7 +143,7 @@ In this file we have to declare the differents programms that we are going to ex
         
         -<window_size>: MTU size
         
-        -<port>: set the port to flood
+        -<select_port>: set the port to flood
 
 - vegeta.sh:
     This script initiates a DDoS attack on the server using vegeta (https://github.com/tsenart/vegeta), simulating a HTTP flood of traffic.
