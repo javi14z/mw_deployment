@@ -62,7 +62,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 **Note** : The configuration of the topology routers takes some time to be operational. If the playbook runs too soon, the traffic of some tasks may not pass through the topology correctly.
 
-#### The programs and scripts that have been implemented are the following:
+#### The programs and scripts that have been implemented in __mw-tasks.yaml__ are the following:
 ##### **Cgserver:**
 - ACROSSserver.py: 
     ```
