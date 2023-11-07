@@ -132,12 +132,17 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     This script initiates a DDoS attack on the server using hping3 with specified parameters, simulating a IP/TCP/UDP flood of traffic.
     - Parameters:
-
+        
         -<mode>: TCP -> leave blank, IP -> -0, ICMP -> -1, UDP -> -2 
+
         -<number_of_packets>: set the packet number to send
+        
         -<packet_data_size>: set the packet data size
+        
         -<target_ip>: target ip to flood
+        
         -<window_size>: MTU size
+        
         -<port>: set the port to flood
 
 - vegeta.sh:
