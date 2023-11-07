@@ -56,7 +56,7 @@
       
     #Cglient:
     - name: Execute ACROSSfile_transfer
-      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py https://ia801802.us.archive.org/15/items/alexander-the-great-1997-part-1/Alexander%20The%20Great%20%281997%29%20Part%201.mp4
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
