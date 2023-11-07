@@ -117,9 +117,8 @@ In this file we have to declare the differents programms that we are going to ex
 
 - ACROSSclient.py:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py 10000
+    kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py <multiplier>
     ```
-    kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py 10000 #set multiplier
     This Python script generates short-lived bursts of high traffic, creating 'cheetah flows'. To simulate this behavior, random spikes of data are sent to the server during communication. This can be achieved by sending a sudden surge of packets over a short duration.
     - Parameters:
         -<multiplier>: adjust the multiplier as needed.
