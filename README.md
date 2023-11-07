@@ -147,12 +147,12 @@ In this file we have to declare the differents programms that we are going to ex
 
 - vegeta.sh:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh <time>
+    kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh <set_time>
     ```
     This script initiates a DDoS attack on the server using vegeta (https://github.com/tsenart/vegeta), simulating a HTTP flood of traffic.
     - Parameters:
         
-        -<time>: set the time of the flood.
+        -<set_time>: set the time of the flood.
 
 - dns_scapy.py:
     ```
@@ -165,7 +165,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 - Quick_scapy:
     This script initiates a DDoS attackk on the server using the scapy library, simulating source IP Spoofing 
-    
+
     **Note**: Is not yet implemented
 
 - dns_proxy:
