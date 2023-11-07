@@ -68,7 +68,6 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     kubectl exec -n ddos cgserver -- python3 ACROSSserver.py 
     ```
-
     We use the sockets library in Python, which offers low-level access to network interfaces. Using this library, we have developed a straightforward server that listens for bursts of traffic from clients.
 
 ##### **Ddosserver:**
@@ -76,14 +75,12 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     kubectl exec -n ddos ddosserver -- nginx -g 'daemon off;' 
     ```
-
     We have set up a standard HTTP/2 server using NGINX, with the aim of serving a basic 'Hello World' web page at the root URI. This URI will be used by clients to carry out the HTTP flood attack
 
 - bind9:
     ```
     kubectl exec -n ddos ddosserver -- service bind9 start
     ```
-
     We have setup a dns server using bind9. The server is waiting to receive new queries through port 53.
     - Features:
           EDNS
@@ -96,7 +93,6 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py <large_file_url> 
     ```
-
     To simulate elephant flows, we have used WGET to generate file transfers. With this, we begin to download a large video file from a website.
     - Parameters:
         -<large_file_url>: set the url to dowload the large file
@@ -105,7 +101,6 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py <YT_video_URL> <viewing_time>
     ```
-
     This Python script automates the process of opening a YouTube video and simulates the user watching the video. It is designed to simulate elephant flows having a large number of users consuming a viral video on YouTube. To automate web browsing we use the Selenium library.
     - Parameters:
         -<YT_video_URL>: set the url to a Youtube Video
@@ -113,9 +108,17 @@ In this file we have to declare the differents programms that we are going to ex
         
 
 - ACROSSshorts.py:
+    ```
+    kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py <viewing_time>
+    ```
     This Python script automates the process of opening YouTube Shorts and simulating the user scrolling through the Shorts feed at a random pace. It is designed to simulate cheetah flow, where a user scrolls through YouTube Shorts and videos load lazily as they show up in the browser viewport. We also use  the Selenium libraryto automate the procces.
+    - Parameters:
+        -<viewing_time>: set the viewing time of Youtube shorts
 
 - ACROSSclient.py:
+    ```
+    kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py 10000
+    ```
     kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py 10000 #set multiplier
     This Python script generates short-lived bursts of high traffic, creating 'cheetah flows'. To simulate this behavior, random spikes of data are sent to the server during communication. This can be achieved by sending a sudden surge of packets over a short duration.
     - Parameters:
