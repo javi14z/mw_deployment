@@ -89,19 +89,19 @@
       poll: 0
 
     - name: Execute vegeta.sh
-      command: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh
+      command: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh 10
+      loop: "{{ ddosclients }}"
+      async: 3600 
+      poll: 0
+
+    - name: Execute dns_scapy
+      command: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} python3 dns_scapy.py 1000
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
   
 #    - name: Execute quick_scapy
 #      command: kubectl exec -n ddos {{ item.pod }} -- python3 quic-scapy/scapy_demo.py
-#      loop: "{{ ddosclients }}"
-#      async: 3600 
-#      poll: 0
-#
-#    - name: Execute dns_scapy
-#      command: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} python3 dns_scapy.py
 #      loop: "{{ ddosclients }}"
 #      async: 3600 
 #      poll: 0
