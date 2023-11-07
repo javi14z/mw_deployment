@@ -56,13 +56,13 @@
       
     #Cglient:
     - name: Execute ACROSSfile_transfer
-      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py https://ia801802.us.archive.org/15/items/alexander-the-great-1997-part-1/Alexander%20The%20Great%20%281997%29%20Part%201.mp4
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py https://ia801802.us.archive.org/15/items/alexander-the-great-1997-part-1/Alexander%20The%20Great%20%281997%29%20Part%201.mp4 #set url
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
 
     - name: Execute ACROSSconsuming_video.py
-      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py 3600 #set time
+      command: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py https://www.youtube.com/watch?v=-No-226O0tg 3600 #set time and url
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0

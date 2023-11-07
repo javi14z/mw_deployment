@@ -96,19 +96,21 @@ In this file we have to declare the differents programms that we are going to ex
     ```
     kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py <large_file_url> 
     ```
-    - Parameters:
-        -<large_file_url>: set the url to dowload the large file.
 
-    To simulate elephant flows, we have used WGET to generate file transfers. With this, we begin to download a large video file from a website. 
+    To simulate elephant flows, we have used WGET to generate file transfers. With this, we begin to download a large video file from a website.
+    - Parameters:
+        -<large_file_url>: set the url to dowload the large file
 
 - ACROSSconsuming_video.py:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py <viewing_time>
+    kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py <YT_video_URL> <viewing_time>
     ```
 
     This Python script automates the process of opening a YouTube video and simulates the user watching the video. It is designed to simulate elephant flows having a large number of users consuming a viral video on YouTube. To automate web browsing we use the Selenium library.
     - Parameters:
+        -<YT_video_URL>: set the url to a Youtube Video
         -<viewing_time>: set the viewing time video
+        
 
 - ACROSSshorts.py:
     This Python script automates the process of opening YouTube Shorts and simulating the user scrolling through the Shorts feed at a random pace. It is designed to simulate cheetah flow, where a user scrolls through YouTube Shorts and videos load lazily as they show up in the browser viewport. We also use  the Selenium libraryto automate the procces.
@@ -117,7 +119,7 @@ In this file we have to declare the differents programms that we are going to ex
     kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py 10000 #set multiplier
     This Python script generates short-lived bursts of high traffic, creating 'cheetah flows'. To simulate this behavior, random spikes of data are sent to the server during communication. This can be achieved by sending a sudden surge of packets over a short duration.
     - Parameters:
-        python3 ACROSSclient.py <multiplier> 
+        -<multiplier>: adjust the multiplier as needed.
 
 ##### **Ddosclient:**
 - hping3.sh:
