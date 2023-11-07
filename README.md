@@ -73,7 +73,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 - bind9:
     We have setup a dns server using bind9. The server is waiting to receive new queries through port 53.
-    - Features implemented:
+    - Implemented features:
           EDNS
           DNSSEC
     - Next features:
