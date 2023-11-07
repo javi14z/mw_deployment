@@ -83,7 +83,7 @@
       
     #ddosclient:
     - name: Execute hping3.sh
-      command: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./hping3.sh
+      command: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} sudo hping3 -c 100 -d 200000000 -S "$ddosserver" -w 1232 -p 43 --flood
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
