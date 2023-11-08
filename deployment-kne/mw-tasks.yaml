@@ -24,7 +24,7 @@
     
     - name: Include server IPs
       include_vars:
-        file: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_k8s/deployment-kne/server_ips.yaml
+        file: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_deployment/deployment-kne/server_ips.yaml
 
     - name: Debug loaded server IPs
       debug:

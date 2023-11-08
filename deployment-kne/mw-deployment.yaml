@@ -81,7 +81,7 @@
         content: |
           ddosserver_ip: "{{ ddosserver_ip }}"
           cgserver_ip: "{{ cgserver_ip }}"
-        dest: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_k8s/deployment-kne/server_ips.yaml
+        dest: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_deployment/deployment-kne/server_ips.yaml
 
 
     - name: "Configure {{ client.pod }}"
