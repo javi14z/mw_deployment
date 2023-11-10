@@ -1,0 +1,111 @@
+---
+- name: Topology Configuration
+  hosts: localhost
+  gather_facts: no
+  vars:
+    cgclients: []
+    ddosclients: []
+    limit: 11
+    
+  tasks:
+    - name: Include client counts
+      include_vars:
+        file: clients_number.yaml
+        
+    - name: Create cgclients_count
+      set_fact:
+        cgclients: "{{ cgclients + [{'name': 'cgclient' ~ item, 'pod': 'cgclient' ~ item}] }}"
+      loop: "{{ range(1, cg_count + 1)|list }}"
+
+    - name: Create ddosclients_count
+      set_fact:
+        ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
+      loop: "{{ range(1, ddos_count + 1)|list }}"
+
+
+    
+    - name: Delete usless cgclients
+      shell: kubectl delete pod -n ddos {{ 'cgclient' ~ item }}
+      loop: "{{ range(cg_count + 1, limit) | list }}"
+
+    - name: Delete usless ddosclients
+      shell: kubectl delete pod -n ddos {{ 'ddosclient' ~ item }}
+      loop: "{{ range(cg_count + 1, limit) | list }}"
+
+        
+
+    - name: Configure cgserver
+      shell: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
+      
+    - name: Configure ddosserver
+      shell: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
+
+
+
+    - name: Get cgserver IP
+      shell: "kubectl exec -n ddos cgserver -- ip addr show eth1 | awk '/inet / {gsub(/\\/\\/[0-9]+/, \"\", $2); print $2}'"
+      register: cgserver_ip_output
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Extract IP from cgserver_ip_output
+      set_fact:
+        cgserver_ip: "{{ cgserver_ip_output.stdout.split('/')[0] }}"
+        
+    - name: Debug cgserverip
+      debug:
+        var: cgserver_ip
+
+    - name: Get ddosserver IP
+      shell: "kubectl exec -n ddos ddosserver -- ip addr show eth1 | awk '/inet / {gsub(/\\/\\/[0-9]+/, \"\", $2); print $2}'"
+      register: ddosserver_ip_output
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Set ddosserver IP as a fact
+      set_fact:
+        ddosserver_ip: "{{ ddosserver_ip_output.stdout.split('/')[0] }}"
+        
+    - name: Debug ddosserverip
+      debug:
+        var: ddosserver_ip
+        
+        
+    - name: Store server IPs in a file
+      copy:
+        content: |
+          ddosserver_ip: "{{ ddosserver_ip }}"
+          cgserver_ip: "{{ cgserver_ip }}"
+        dest: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_deployment/deployment-kne/server_ips.yaml
+
+
+    - name: "Configure {{ client.pod }}"
+      shell: kubectl exec -it -n ddos {{ client.pod }} -- python3 {{ client.name }}-config.py
+      loop: "{{ cgclients + ddosclients }}"
+      loop_control:
+        loop_var: client
+        
+
+        
+    - name: Generate custom .bashrc 
+      shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc'
+      loop: "{{ cgclients + ddosclients }}"
+      loop_control:
+        loop_var: client
+        
+    - name: Source.bashrc 
+      shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'source /root/.bashrc'
+      loop: "{{ cgclients + ddosclients }}"
+      loop_control:
+        loop_var: client
+
+
+    - name: Debug cgserver connection
+      shell: kubectl exec -n ddos cgclient1 -- env cgserver={{ cgserver_ip }} /bin/bash -c 'until ping -c 1 -i 20 $cgserver; do :; done; exit 0'
+      ignore_errors: yes
+
+      
+    - name: Debug ddosserver connection
+      shell: kubectl exec -n ddos ddosclient1 -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'until ping -c 1 -i 20 $ddosserver; do :; done; exit 0'
+      ignore_errors: yes
+      

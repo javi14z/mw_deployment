@@ -8,7 +8,7 @@ Using **Ansible** we have automated the deployment of the different Docker image
 $ sudo apt install ansible
 ```
 
-Throughout the document, we will describe the way of using the different playbooks created. This will allow us to deploy the scenario (__mw-deployment.yaml__), delete them (__mw-undeployment.yaml__) and execute tasks (__mw-tasks.yaml__). With this, we can easily **scale** the number of pods (__clients_number.yaml__) that we are going to deploy for different experiments. We can also decide the programs and scripts that we want to run as well as the execution time and other options.
+Throughout the document, we will describe the way of using the different playbooks created. This will allow us to deploy the scenario (__mw-deployment.yaml__),configure the pods(__mw-config.yaml__) delete them (__mw-undeployment.yaml__) and execute tasks (__mw-tasks.yaml__). With this, we can easily **scale** the number of pods (__clients_number.yaml__) that we are going to deploy for different experiments. We can also decide the programs and scripts that we want to run as well as the execution time and other options.
 
 ## Scenario
 
@@ -32,18 +32,18 @@ We can deploy two types of clients depending on the traffic we want to generate 
 $ ansible-playbook mw-deployment.yaml
 ```
 
-With this playbook we configure and launch the different pods according to the number requested in the __clients_number.yaml__ file.
+Inside the playbook we run the configuration file that Kne uses to create the topology through which the traffic will pass. 
+
+### - mw-config.yaml
+```
+$ ansible-playbook mw-config.yaml
+```
+
+With this playbook we configure the different pods according to the number requested in the __clients_number.yaml__ file.
 
 Inside the file also we configure the different routes of the **topology** through which all the traffic generated will pass as well as the different environment variables for the operation of the programs.
 
 **Note** : The configuration of the topology routers takes some time to be operational (5 min approx). When the deployment playbook is finished, all the scenario is configured and ready to play tasks.
-
-Inside the playbook we run the following command:
-```
-$ kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
-```
-
-This is the configuration file that Kne uses to create the topology through which the traffic will pass. 
 
 For more debug options in the deploymets with Ansible add: "<set_command> 2>&1 | tee /dev/tty"
 
