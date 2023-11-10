@@ -25,25 +25,25 @@
 
 
     - name: Deploy topology
-      command: kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
+      shell: kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
 
 
     
     - name: Delete usless cgclients
-      command: kubectl delete pod -n ddos {{ 'cgclient' ~ item }}
+      shell: kubectl delete pod -n ddos {{ 'cgclient' ~ item }}
       loop: "{{ range(cg_count + 1, limit) | list }}"
 
     - name: Delete usless ddosclients
-      command: kubectl delete pod -n ddos {{ 'ddosclient' ~ item }}
+      shell: kubectl delete pod -n ddos {{ 'ddosclient' ~ item }}
       loop: "{{ range(cg_count + 1, limit) | list }}"
 
         
 
     - name: Configure cgserver
-      command: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
+      shell: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
       
     - name: Configure ddosserver
-      command: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
+      shell: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
 
 
 
@@ -85,7 +85,7 @@
 
 
     - name: "Configure {{ client.pod }}"
-      command: kubectl exec -it -n ddos {{ client.pod }} -- python3 {{ client.name }}-config.py
+      shell: kubectl exec -it -n ddos {{ client.pod }} -- python3 {{ client.name }}-config.py
       loop: "{{ cgclients + ddosclients }}"
       loop_control:
         loop_var: client
@@ -93,15 +93,24 @@
 
         
     - name: Generate custom .bashrc 
-      command: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc'
+      shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc'
       loop: "{{ cgclients + ddosclients }}"
       loop_control:
         loop_var: client
         
     - name: Source.bashrc 
-      command: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'source /root/.bashrc'
+      shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'source /root/.bashrc'
       loop: "{{ cgclients + ddosclients }}"
       loop_control:
         loop_var: client
-        
 
+
+    - name: Debug cgserver connection
+      shell: kubectl exec -n ddos cgclient1 -- env cgserver={{ cgserver_ip }} /bin/bash -c 'until ping -c 1 -i 20 $cgserver; do :; done; exit 0'
+      ignore_errors: yes
+
+      
+    - name: Debug ddosserver connection
+      shell: kubectl exec -n ddos ddosclient1 -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'until ping -c 1 -i 20 $ddosserver; do :; done; exit 0'
+      ignore_errors: yes
+      

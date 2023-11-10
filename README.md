@@ -8,7 +8,7 @@ Using **Ansible** we have automated the deployment of the different Docker image
 $ sudo apt install ansible
 ```
 
-Throughout the document, we will describe the way of using the different playbooks created. This will allow us to deploy the scenario (__mw-deployment.yaml__), delete them (__mw-undeployment.yaml__) and execute tasks (__mw-tasks.yaml__). With this, we can easily **scale** the number of pods that we are going to deploy for different experiments. We can also decide the programs and scripts that we want to run as well as the execution time and other options.
+Throughout the document, we will describe the way of using the different playbooks created. This will allow us to deploy the scenario (__mw-deployment.yaml__), delete them (__mw-undeployment.yaml__) and execute tasks (__mw-tasks.yaml__). With this, we can easily **scale** the number of pods (__clients_number.yaml__) that we are going to deploy for different experiments. We can also decide the programs and scripts that we want to run as well as the execution time and other options.
 
 ## Scenario
 
@@ -25,6 +25,8 @@ We can deploy two types of clients depending on the traffic we want to generate 
 
     ![image1](https://github.com/javi14z/mw_k8s/blob/main/images/image1.png)
 
+**Note** : Currently the topology configuration has support for 10 clients of each type.
+
 ### - mw-deployment.yaml
 ```
 $ ansible-playbook mw-deployment.yaml
@@ -34,12 +36,16 @@ With this playbook we configure and launch the different pods according to the n
 
 Inside the file also we configure the different routes of the **topology** through which all the traffic generated will pass as well as the different environment variables for the operation of the programs.
 
-**Note** : Inside the playbook we run the following command:
+**Note** : The configuration of the topology routers takes some time to be operational (5 min approx). When the deployment playbook is finished, all the scenario is configured and ready to play tasks.
+
+Inside the playbook we run the following command:
 ```
 $ kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
 ```
 
-This is the configuration file that Kne uses to create the topology through which the traffic will pass. Currently the topology configuration has support for 10 clients of each type.
+This is the configuration file that Kne uses to create the topology through which the traffic will pass. 
+
+For more debug options in the deploymets with Ansible add: "<set_command> 2>&1 | tee /dev/tty"
 
 
 ### - mw-undeploy.yaml
@@ -59,8 +65,6 @@ $ ansible-playbook mw-tasks.yaml
 In this file we have to declare the differents programms that we are going to execute in the pods generated. Inside the file you can comment with **#** the tasks that you don't want to be executed. You can also configure the execution time of each task and other options:
 
 ![image2](https://github.com/javi14z/mw_k8s/blob/main/images/image2.png)
-
-**Note** : The configuration of the topology routers takes some time to be operational. If the playbook runs too soon, the traffic of some tasks may not pass through the topology correctly.
 
 #### The programs and scripts that have been implemented are the following:
 ##### **Cgserver:**
@@ -85,7 +89,7 @@ In this file we have to declare the differents programms that we are going to ex
     - Features: EDNS,DNSSEC
     - Next features: DOH support
 
-##### **Cglient:**
+##### **Cgclient:**
 - ACROSSfile_transfer.py:
     ```
     kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py <large_file_url> 
@@ -169,3 +173,5 @@ In this file we have to declare the differents programms that we are going to ex
 
 - dns_proxy:
     This Python script initiates a DDoS attack on the server using the scapy library, simulating DNS Amplification.
+
+    **Note**: The DNS server still doesn't support doh
