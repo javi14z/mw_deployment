@@ -78,6 +78,11 @@
       async: 3600 
       poll: 0
 
+    - name: Execute CGTest19.sh
+      shell: kubectl exec -n ddos {{ item.pod }} -- ./CGTest19.sh web_links.txt
+      loop: "{{ cgclients }}"
+      async: 3600 
+      poll: 0
       
       
     #ddosclient:

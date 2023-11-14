@@ -130,6 +130,13 @@ In this file we have to declare the differents programms that we are going to ex
 
         -<set_multiplier>: adjust the multiplier as needed.
 
+- CGTest19.sh:
+    ```
+    kubectl exec -n ddos {{ item.pod }} -- ./CGTest19.sh web_links.txt
+    ```
+    This script generates traffic visiting websites with curl from a text file with links.
+
+
 ##### **Ddosclient:**
 - hping3.sh:
     ```
