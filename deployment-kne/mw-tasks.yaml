@@ -7,7 +7,7 @@
     ddosclients: []
 
   tasks:
-    #------------------------------Configuration--------------------------------------------------------------
+#--------------------------------------Configuration------------------------------------------------------------------------------------
     - name: Include client counts
       include_vars:
         file: clients_number.yaml
@@ -24,7 +24,7 @@
     
     - name: Include server IPs
       include_vars:
-        file: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_deployment/deployment-kne/server_ips.yaml
+        file: "{{ playbook_dir }}/server_ips.yaml"
 
     - name: Debug loaded server IPs
       debug:
@@ -35,8 +35,7 @@
         var: cgserver_ip
       
 
-
-    #------------------------------Tasks execution---------------------------------------------------------------
+#---------------------------------Tasks execution---------------------------------------------------------------------------------------
     #cgserver:
     - name: Start ACROSSserver.py
       shell: kubectl exec -n ddos cgserver -- python3 ACROSSserver.py 

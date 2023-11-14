@@ -5,9 +5,9 @@
   vars:
     cgclients: []
     ddosclients: []
-    
+
   tasks:
-  
+#--------------------------------------------Configuration---------------------------------------------------------------------------
     - name: Include client counts
       include_vars:
         file: clients_number.yaml
@@ -22,22 +22,22 @@
         ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
       loop: "{{ range(1, ddos_count + 1)|list }}"
       
-      
-      
+#--------------------------------------------Save logs---------------------------------------------------------------------------
+
     - name: Copy logs folder
-      shell: "kubectl -n ddos cp {{ item.pod }}:/home/cognet/logs /home/mw/kne/examples/cisco/conversion/Topologias/ddos/mw_deployment/deployment-kne/logs/{{ item.name }}_logs"
+      shell: "kubectl -n ddos cp {{ item.pod }}:/home/cognet/logs {{ playbook_dir }}/logs/{{ item.name }}_logs"
       loop: "{{ cgclients + ddosclients }}"
       ignore_errors: yes
       
     - name: Copy logs folder
-      shell: "kubectl -n ddos cp cgserver:/home/cognet/logs /home/mw/kne/examples/cisco/conversion/Topologias/ddos/mw_deployment/deployment-kne/logs/cgserver_logs"
+      shell: "kubectl -n ddos cp cgserver:/home/cognet/logs {{ playbook_dir }}/logs/cgserver_logs"
       ignore_errors: yes
       
     - name: Copy logs folder
-      shell: "kubectl -n ddos cp ddosserver:/home/cognet/logs /home/mw/kne/examples/cisco/conversion/Topologias/ddos/mw_deployment/deployment-kne/logs/ddosserver_logs"
+      shell: "kubectl -n ddos cp ddosserver:/home/cognet/logs {{ playbook_dir }}/logs/ddosserver_logs"
       ignore_errors: yes
-      
-          
+
+#--------------------------------------------Undeploy kne---------------------------------------------------------------------------
     - name: Undeploy topology
       shell: kne delete ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
         

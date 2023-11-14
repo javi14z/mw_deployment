@@ -3,6 +3,7 @@
   hosts: localhost
   gather_facts: no
   tasks: 
+ #--------------------------------------------Deploy kne---------------------------------------------------------------------------
  
     - name: Deploy topology
-      shell: kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
+      shell: kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml # Configure the path where the kne topology file is

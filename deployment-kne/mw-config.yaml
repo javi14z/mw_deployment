@@ -8,6 +8,7 @@
     limit: 11
     
   tasks:
+#------------------------------------------Configuration---------------------------------------------------------------------
     - name: Include client counts
       include_vars:
         file: clients_number.yaml
@@ -23,7 +24,6 @@
       loop: "{{ range(1, ddos_count + 1)|list }}"
 
 
-    
     - name: Delete usless cgclients
       shell: kubectl delete pod -n ddos {{ 'cgclient' ~ item }}
       loop: "{{ range(cg_count + 1, limit) | list }}"
@@ -32,7 +32,7 @@
       shell: kubectl delete pod -n ddos {{ 'ddosclient' ~ item }}
       loop: "{{ range(cg_count + 1, limit) | list }}"
 
-        
+#------------------------------------------Ip_routes---------------------------------------------------------------------      
 
     - name: Configure cgserver
       shell: kubectl exec -it -n ddos cgserver -- python3 cgserver-config.py
@@ -76,7 +76,7 @@
         content: |
           ddosserver_ip: "{{ ddosserver_ip }}"
           cgserver_ip: "{{ cgserver_ip }}"
-        dest: ~/kne/examples/cisco/conversion/Topologias/ddos/mw_deployment/deployment-kne/server_ips.yaml
+        dest: "{{ playbook_dir }}/server_ips.yaml"
 
 
     - name: "Configure {{ client.pod }}"
@@ -85,7 +85,7 @@
       loop_control:
         loop_var: client
         
-
+#---------------------------------------export variables----------------------------------------------------------------------------------------------
         
     - name: Generate custom .bashrc 
       shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc'
@@ -98,7 +98,14 @@
       loop: "{{ cgclients + ddosclients }}"
       loop_control:
         loop_var: client
+        
+ #---------------------------------------configure resolv.conf----------------------------------------------------------------------------------------------       
+    
+    - name: Configure resolv.conf in ddosclient1
+      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'sudo echo -e "nameserver $ddosserver\noptions edns0" > /etc/resolv.conf'
+      loop: "{{ ddosclients }}"
 
+#---------------------------------------debug routers----------------------------------------------------------------------------------------------
 
     - name: Debug cgserver connection
       shell: kubectl exec -n ddos cgclient1 -- env cgserver={{ cgserver_ip }} /bin/bash -c 'until ping -c 1 -i 20 $cgserver; do :; done; exit 0'
@@ -108,22 +115,23 @@
     - name: Debug ddosserver connection
       shell: kubectl exec -n ddos ddosclient1 -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'until ping -c 1 -i 20 $ddosserver; do :; done; exit 0'
       ignore_errors: yes
-    
-    
+
+
+#---------------------------------------tcpdump----------------------------------------------------------------------------------------------
     
     - name: Run tcpdump on cgclient and ddosclient
-      command: kubectl -n ddos exec -it {{ item.pod }} -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -C 1000
+      command: kubectl -n ddos exec -it {{ item.pod }} -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -W 1 -C 1000
       loop: "{{ cgclients + ddosclients}}"
       async: 3600 
       poll: 0
       
     - name: Run tcpdump on cgserver
-      command: kubectl -n ddos exec -it cgserver -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -C 1000
+      command: kubectl -n ddos exec -it cgserver -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -W 1 -C 1000
       async: 3600 
       poll: 0
       
     - name: Run tcpdump on ddosserver
-      command: kubectl -n ddos exec -it ddosserver -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -C 1000
+      command: kubectl -n ddos exec -it ddosserver -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -W 1 -C 1000
       async: 3600 
       poll: 0
       
