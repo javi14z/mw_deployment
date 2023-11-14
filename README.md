@@ -34,7 +34,7 @@ $ ansible-playbook mw-deployment.yaml
 
 Inside the playbook we run the configuration file that Kne uses to create the topology through which the traffic will pass. This brings up all the routers following the topology built in EVE-NG.
 
-**Note** : In this file you must configure the path where the kne topology file is (kne create <path_to_kne_file>). Currently the server is configured with the following path: ~/one/examples/cisco/conversion/Topologia/ddos/Topologia Ddos.yaml
+**Note** : In this file you must configure the path where the kne topology file is (kne create <path_to_kne_file>). Currently the server is configured with the following path: ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
 
 ### - mw-config.yaml
 ```
