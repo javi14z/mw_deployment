@@ -62,7 +62,7 @@
       changed_when: false
       ignore_errors: yes
 
-    - name: Set ddosserver IP as a fact
+    - name: Extract IP from ddosserver_ip_output
       set_fact:
         ddosserver_ip: "{{ ddosserver_ip_output.stdout.split('/')[0] }}"
         

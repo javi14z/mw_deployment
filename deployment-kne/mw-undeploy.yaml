@@ -22,19 +22,29 @@
         ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
       loop: "{{ range(1, ddos_count + 1)|list }}"
       
+    - name: Get current date
+      command: date +%Y.%m.%d_%H.%M.%S
+      register: current_date
+      
 #--------------------------------------------Save logs---------------------------------------------------------------------------
 
+
+    - name: Create logs folder with current date
+      file:
+        path: "~/NDT/logs_{{ current_date.stdout }}"
+        state: directory
+    
     - name: Copy logs folder
-      shell: "kubectl -n ddos cp {{ item.pod }}:/home/cognet/logs {{ playbook_dir }}/logs/{{ item.name }}_logs"
+      shell: "kubectl -n ddos cp {{ item.pod }}:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/{{ item.name }}_logs"
       loop: "{{ cgclients + ddosclients }}"
       ignore_errors: yes
       
     - name: Copy logs folder
-      shell: "kubectl -n ddos cp cgserver:/home/cognet/logs {{ playbook_dir }}/logs/cgserver_logs"
+      shell: "kubectl -n ddos cp cgserver:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/cgserver_logs"
       ignore_errors: yes
       
     - name: Copy logs folder
-      shell: "kubectl -n ddos cp ddosserver:/home/cognet/logs {{ playbook_dir }}/logs/ddosserver_logs"
+      shell: "kubectl -n ddos cp ddosserver:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/ddosserver_logs"
       ignore_errors: yes
 
 #--------------------------------------------Undeploy kne---------------------------------------------------------------------------
