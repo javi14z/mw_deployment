@@ -16,7 +16,7 @@ Throughout the document, we will describe the way of using the different playboo
 
 ## Usage
 
-### - 1. clients_number.yaml
+### - clients_number.yaml
 The first thing to do is adjust in this file the number of clients that we want to deploy for traffic generation (**ddosclient** and **cgclient**). This file will be used by the different playbooks to display the exact number of clients:
 
 We can deploy two types of clients depending on the traffic we want to generate in the experiment:
@@ -27,7 +27,7 @@ We can deploy two types of clients depending on the traffic we want to generate 
 
 **Note** : Currently the topology configuration has support for 10 clients of each type.
 
-### - 2. mw-deployment.yaml
+### - mw-deployment.yaml
 ```
 $ ansible-playbook mw-deployment.yaml
 ```
@@ -36,7 +36,7 @@ Inside the playbook we run the configuration file that Kne uses to create the to
 
 **Note** : In this file you must configure the path where the kne topology file is (kne create <path_to_kne_file>). Currently the server is configured with the following path: ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
 
-### - 3. mw-config.yaml
+### - mw-config.yaml
 ```
 $ ansible-playbook mw-config.yaml
 ```
