@@ -61,16 +61,18 @@
       poll: 0
 
     - name: Execute ACROSSconsuming_video.py
-      shell: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py https://www.youtube.com/watch?v=-No-226O0tg 3600 #set time and url
+      shell: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py https://www.youtube.com/watch?v=-No-226O0tg 25 #set time and url
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
+      register: acrossclient_result
     
     - name: Execute ACROSSshorts.py
-      shell: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py 3600 #set time
+      shell: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py 25 #set time
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
+      register: acrossshorts_result
       
     - name: Execute ACROSSclient.py
       shell: kubectl exec -n ddos {{ item.pod }} -- env cgserver={{ cgserver_ip }} python3 ACROSSclient.py 10000 #set multiplier
@@ -87,13 +89,13 @@
       
     #ddosclient:
     - name: Execute hping3.sh
-      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'sudo hping3 -c 100 -d 200000000 -S $ddosserver -w 1232 -p 43 --flood'
+      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'sudo hping3 -c 100 -d 200 -S $ddosserver -w 1232 -p 43 --flood'
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
 
     - name: Execute vegeta.sh
-      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh 10
+      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh 100
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
@@ -103,7 +105,7 @@
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
-  
+    
 #    - name: Execute quick_scapy
 #      shell: kubectl exec -n ddos {{ item.pod }} -- python3 quic-scapy/scapy_demo.py
 #      loop: "{{ ddosclients }}"
@@ -122,3 +124,14 @@
 #       async: 3600 
 #       poll: 0
 
+#---------------------------------Waiting tasks---------------------------------------------------------------------------------------
+
+    - name: Waiting for ACROSSconsuming_video.py and ACROSSshort.py finish
+      async_status: 
+        jid: "{{ item.ansible_job_id }}"
+      loop: "{{ (acrossclient_result.results | default([])) + (acrossshorts_result.results | default([])) }}"
+      register: acrossclient_jobs
+      until: acrossclient_jobs.finished
+      retries: 600
+      delay: 15
+      

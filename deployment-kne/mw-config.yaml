@@ -120,18 +120,18 @@
 #---------------------------------------tcpdump----------------------------------------------------------------------------------------------
     
     - name: Run tcpdump on cgclient and ddosclient
-      command: kubectl -n ddos exec -it {{ item.pod }} -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -W 1 -C 1000
+      command: kubectl -n ddos exec -it {{ item.pod }} -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap
       loop: "{{ cgclients + ddosclients}}"
       async: 3600 
       poll: 0
       
     - name: Run tcpdump on cgserver
-      command: kubectl -n ddos exec -it cgserver -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -W 1 -C 1000
+      command: kubectl -n ddos exec -it cgserver -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap
       async: 3600 
       poll: 0
       
     - name: Run tcpdump on ddosserver
-      command: kubectl -n ddos exec -it ddosserver -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -W 1 -C 1000
+      command: kubectl -n ddos exec -it ddosserver -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap
       async: 3600 
       poll: 0
       
