@@ -33,13 +33,21 @@
         path: "~/NDT/logs_{{ current_date.stdout }}"
         state: directory
     
-    - name: Copy logs folder clients client
+    - name: Copy logs folder cgclients
       shell: "kubectl -n ddos cp {{ item.pod }}:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/{{ item.name }}_logs"
-      loop: "{{ cgclients + ddosclients }}"
+      loop: "{{ cgclients }}"
       ignore_errors: yes
       async: 3600 
       poll: 0
-      register: copylogclient_result 
+      register: copylogcgclient_result 
+
+    - name: Copy logs folder ddosclients
+      shell: "kubectl -n ddos cp {{ item.pod }}:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/{{ item.name }}_logs"
+      loop: "{{ ddosclients }}"
+      ignore_errors: yes
+      async: 3600 
+      poll: 0
+      register: copylogddosclient_result 
       
     - name: Copy logs folder cgserver
       shell: "kubectl -n ddos cp cgserver:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/cgserver_logs"
@@ -59,11 +67,12 @@
     - name: Finishing copying logs
       async_status: 
         jid: "{{ item.ansible_job_id }}"
-      loop: "{{ (copylogclient_result.results | default([])) + (copylogserver_result.results | default([])) + (copylogddosserver_result.results | default([])) }}"
+      loop: "{{ (copylogcgclient_result.results | default([])) + (copylogddosclient_result.results | default([])) + (copylogserver_result.results | default([])) + (copylogddosserver_result.results | default([])) }}"
       register: acrossclient_jobs
       until: acrossclient_jobs.finished
       retries: 600
       delay: 15
+      ignore_errors: yes
     
 
 #--------------------------------------------Undeploy kne---------------------------------------------------------------------------
