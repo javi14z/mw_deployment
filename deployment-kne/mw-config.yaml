@@ -99,12 +99,24 @@
       loop_control:
         loop_var: client
         
+  #---------------------------------------internet pod configuration----------------------------------------------------------------------------------------------
+
+    - name: Execute internet-config.py
+      shell: kubectl exec -n ddos internet -- python3 internet-config.py
+      ignore_errors: yes
+
+      
+    - name: Iptables
+      shell: kubectl exec -n ddos internet -- /bin/sh -c 'iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE'
+      ignore_errors: yes
+        
  #---------------------------------------configure resolv.conf----------------------------------------------------------------------------------------------       
     
     - name: Configure resolv.conf in ddosclient1
       shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'sudo echo -e "nameserver $ddosserver\noptions edns0" > /etc/resolv.conf'
       loop: "{{ ddosclients }}"
-
+      
+      
 #---------------------------------------debug routers----------------------------------------------------------------------------------------------
 
     - name: Debug cgserver connection
