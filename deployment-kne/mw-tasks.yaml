@@ -33,6 +33,10 @@
     - name: Debug loaded server IPs
       debug:
         var: cgserver_ip
+        
+    - name: Debug loaded server IPs
+      debug:
+        var: internet_ip
       
 
 #---------------------------------Tasks execution---------------------------------------------------------------------------------------
@@ -55,20 +59,20 @@
       
     #Cglient:
     - name: Execute ACROSSfile_transfer
-      shell: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py https://ia801802.us.archive.org/15/items/alexander-the-great-1997-part-1/Alexander%20The%20Great%20%281997%29%20Part%201.mp4 #set url
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSfile_transfer.py https://ia801802.us.archive.org/15/items/alexander-the-great-1997-part-1/Alexander%20The%20Great%20%281997%29%20Part%201.mp4 #set url
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
 
     - name: Execute ACROSSconsuming_video.py
-      shell: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py https://www.youtube.com/watch?v=-No-226O0tg 25 #set time and url
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSconsuming_video.py https://www.youtube.com/watch?v=-No-226O0tg 30 #set time and url
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
       register: acrossclient_result
     
     - name: Execute ACROSSshorts.py
-      shell: kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py 25 #set time
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSshorts.py 30 #set time
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
@@ -81,7 +85,7 @@
       poll: 0
 
     - name: Execute CGTest19.sh
-      shell: kubectl exec -n ddos {{ item.pod }} -- ./CGTest19.sh web_links.txt
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ./CGTest19.sh web_links.txt
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
@@ -95,13 +99,13 @@
       poll: 0
 
     - name: Execute vegeta.sh
-      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh 100
+      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} ./vegeta.sh 30
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
 
     - name: Execute dns_scapy
-      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} python3 dns_scapy.py 1000
+      shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} python3 dns_scapy.py 100
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
@@ -131,7 +135,7 @@
         jid: "{{ item.ansible_job_id }}"
       loop: "{{ (acrossclient_result.results | default([])) + (acrossshorts_result.results | default([])) }}"
       register: acrossclient_jobs
-      until: acrossclient_jobs.finished
-      retries: 600
+      until: acrossclient_jobs.finished 
+      retries: 999
       delay: 15
       
