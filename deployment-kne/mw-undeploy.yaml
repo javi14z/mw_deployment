@@ -70,7 +70,7 @@
       loop: "{{ (copylogcgclient_result.results | default([])) + (copylogddosclient_result.results | default([])) + (copylogserver_result.results | default([])) + (copylogddosserver_result.results | default([])) }}"
       register: acrossclient_jobs
       until: acrossclient_jobs.finished
-      retries: 600
+      retries: 999
       delay: 15
       ignore_errors: yes
     
