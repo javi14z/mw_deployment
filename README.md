@@ -166,6 +166,11 @@ In this file we have to declare the differents programms that we are going to ex
         
         -<set_time>: set the time of the flood.
 
+- Quick_scapy (scapy-demo.py):
+    This script initiates a DDoS attackk on the server using the scapy library, simulating source IP Spoofing 
+
+    **Note**: Is not yet implemented
+
 - dns_scapy.py:
     ```
     kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} python3 dns_scapy.py <dns_query_packets>
@@ -175,12 +180,7 @@ In this file we have to declare the differents programms that we are going to ex
         
         -<dns_query_packets>: set the number of querys.
 
-- Quick_scapy:
-    This script initiates a DDoS attackk on the server using the scapy library, simulating source IP Spoofing 
-
-    **Note**: Is not yet implemented
-
-- dns_proxy:
+- dns_proxy (for doh):
     This Python script initiates a DDoS attack on the server using the scapy library, simulating DNS Amplification.
 
     **Note**: The DNS server still doesn't support doh
