@@ -165,11 +165,11 @@
 
 #---------------------------------------tcpdump----------------------------------------------------------------------------------------------
     
-    - name: Run tcpdump on cgclient and ddosclient
-      command: kubectl -n ddos exec -it {{ item.pod }} -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap -s 150
-      loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}]}}"
-      async: 3600 
-      poll: 0
-      when: "'client' in item.name or 'server' in item.name"
+    # - name: Run tcpdump on cgclient and ddosclient
+    #   command: kubectl -n ddos exec -it {{ item.pod }} -- tcpdump -i eth1 -w /home/cognet/logs/tcpdump.pcap
+    #   loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}]}}"
+    #   async: 3600 
+    #   poll: 0
+    #   when: "'client' in item.name or 'server' in item.name"
       
       
