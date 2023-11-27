@@ -108,25 +108,24 @@
         
     - name: Generate custom .bashrc 
       shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc && echo "export internet={{ internet_ip }}" >> /root/.bashrc && echo "export http_proxy=http://{{ internet_ip }}:3128" >> /root/.bashrc && echo "export https_proxy=http://{{ internet_ip }}:3128" >> /root/.bashrc'
-      loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}]}}"
-      loop_control:
-        loop_var: client
-      when: "'client' in client.name or 'server' in client.name"
-        
-    - name: Generate custom apt.conf for cgclients and ddosclients
-      shell: kubectl exec -n ddos {{ client.pod }} -- env internet={{ internet_ip }} /bin/bash -c 'echo "Acquire::http::Proxy \"http://$internet:3128\";\nAcquire::https::Proxy \"http://$internet:3128\";" > /etc/apt/apt.conf'
-      loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}]}}"
+      loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}] }}"
       loop_control:
         loop_var: client
       when: "'client' in client.name or 'server' in client.name"
 
-
-        
     - name: Source.bashrc 
       shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'source /root/.bashrc'
-      loop: "{{ cgclients + ddosclients }}"
+      loop: "{{ cgclients + ddosclients [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}] }}"
       loop_control:
         loop_var: client
+      when: "'client' in client.name or 'server' in client.name"
+        
+    - name: Generate custom apt.conf 
+      shell: kubectl exec -n ddos {{ client.pod }} -- env internet={{ internet_ip }} /bin/bash -c 'echo "Acquire::http::Proxy \"http://$internet:3128\";\nAcquire::https::Proxy \"http://$internet:3128\";" > /etc/apt/apt.conf'
+      loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}] }}"
+      loop_control:
+        loop_var: client
+      when: "'client' in client.name or 'server' in client.name"
         
   #---------------------------------------internet pod configuration----------------------------------------------------------------------------------------------
       
