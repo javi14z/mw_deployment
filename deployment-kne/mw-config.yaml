@@ -115,7 +115,7 @@
 
     - name: Source.bashrc 
       shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'source /root/.bashrc'
-      loop: "{{ cgclients + ddosclients [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}] }}"
+      loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}] }}"
       loop_control:
         loop_var: client
       when: "'client' in client.name or 'server' in client.name"
