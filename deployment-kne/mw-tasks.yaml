@@ -105,7 +105,7 @@
       poll: 0
 
     - name: Execute dns_scapy
-      shell: kubectl exec -n ddos {{ item.pod }} -- env env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 dns_scapy.py 100
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 dns_scapy.py 100
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0

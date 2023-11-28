@@ -94,7 +94,7 @@ In this file we have to declare the differents programms that we are going to ex
 ##### **Cgclient:**
 - ACROSSfile_transfer.py:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSfile_transfer.py <large_file_url> 
+    kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSfile_transfer.py <large_file_url> 
     ```
     To simulate elephant flows, we have used WGET to generate file transfers. With this, we begin to download a large video file from a website.
     - Parameters:
@@ -103,7 +103,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 - ACROSSconsuming_video.py:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSconsuming_video.py <YT_video_URL> <viewing_time>
+    kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSconsuming_video.py <YT_video_URL> <viewing_time>
     ```
     This Python script automates the process of opening a YouTube video and simulates the user watching the video. It is designed to simulate elephant flows having a large number of users consuming a viral video on YouTube. To automate web browsing we use the Selenium library.
     - Parameters:
@@ -114,7 +114,7 @@ In this file we have to declare the differents programms that we are going to ex
         
 - ACROSSshorts.py:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- python3 ACROSSshorts.py <viewing_time>
+    kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSshorts.py <viewing_time>
     ```
     This Python script automates the process of opening YouTube Shorts and simulating the user scrolling through the Shorts feed at a random pace. It is designed to simulate cheetah flow, where a user scrolls through YouTube Shorts and videos load lazily as they show up in the browser viewport. We also use  the Selenium libraryto automate the procces.
     - Parameters:
@@ -132,7 +132,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 - CGTest19.sh:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- ./CGTest19.sh web_links.txt
+    kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ./CGTest19.sh web_links.txt
     ```
     This script generates traffic visiting websites with curl from a text file with links.
 
@@ -173,7 +173,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 - dns_scapy.py:
     ```
-    kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} python3 dns_scapy.py <dns_query_packets>
+    kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 dns_scapy.py <dns_query_packets>
     ```
     This script initiates a DNS Amplification attack on the local Dns server using the scapy library.
     - Parameters:
