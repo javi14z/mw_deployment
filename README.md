@@ -45,7 +45,7 @@ With this playbook we configure the different pods according to the number reque
 
 Inside the file also we configure the different routes of the **topology** through which all the traffic generated will pass as well as the different environment variables for the operation of the programs. We also start a capture with tcpdump in each pod, in which all the traffic will be saved.
 
-**Note** : The configuration of the topology routers takes some time to be operational (5 min approx). When the deployment playbook is finished, all the scenario is configured and ready to play tasks.
+**Note** : When the deployment playbook is finished, all the scenario is configured and ready to play tasks. If we want to collect .pcaps inside the pods, we can activate them in the last section of the playbook called tcpdump.
 
 For more debug options in the deploymets with Ansible add: "<set_command> 2>&1 | tee /dev/tty"
 
