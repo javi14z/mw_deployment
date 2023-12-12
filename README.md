@@ -72,15 +72,15 @@ In this file we have to declare the differents programms that we are going to ex
 
 ![image2](https://github.com/javi14z/mw_k8s/blob/main/images/image2.png)
 
-#### The programs and scripts that have been implemented are the following:
-##### **Cgserver:**
+*The programs and scripts that have been implemented are the following:*
+#### **Cgserver:**
 - ACROSSserver.py:
     ```
     kubectl exec -n ddos cgserver -- python3 ACROSSserver.py 
     ```
     We use the sockets library in Python, which offers low-level access to network interfaces. Using this library, we have developed a straightforward server that listens for bursts of traffic from clients.
 
-##### **Ddosserver:**
+#### **Ddosserver:**
 - ngnix:
     ```
     kubectl exec -n ddos ddosserver -- nginx -g 'daemon off;' 
@@ -95,7 +95,7 @@ In this file we have to declare the differents programms that we are going to ex
     - Features: EDNS,DNSSEC
     - Next features: DOH support
 
-##### **Cgclient:**
+#### **Cgclient:**
 - ACROSSfile_transfer.py:
     ```
     kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSfile_transfer.py <large_file_url> 
@@ -141,7 +141,7 @@ In this file we have to declare the differents programms that we are going to ex
     This script generates traffic visiting websites with curl from a text file with links.
 
 
-##### **Ddosclient:**
+#### **Ddosclient:**
 - hping3.sh:
     ```
     kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} sudo hping3 <select_mode> -c <number_of_packets> -d <packet_data_size> -S <target_ip> -w <window size> -p <select_port> --flood
