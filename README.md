@@ -72,7 +72,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 ![image2](https://github.com/javi14z/mw_k8s/blob/main/images/image2.png)
 
-*The programs and scripts that have been implemented are the following:*
+**The programs and scripts that have been implemented are the following:**
 #### **Cgserver:**
 - ACROSSserver.py:
     ```
