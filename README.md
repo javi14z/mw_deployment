@@ -8,7 +8,7 @@ Using **Ansible** we have automated the deployment of the different Docker image
 $ sudo apt install ansible
 ```
 
-Throughout the document, we will describe the way of using the different playbooks created. This will allow us to deploy the scenario (__mw-deployment.yaml__),configure the pods(__mw-config.yaml__), delete them (__mw-undeployment.yaml__) and execute tasks (__mw-tasks.yaml__). With this, we can easily **scale** the number of pods (__clients_number.yaml__) that we are going to deploy for different experiments. We can also decide the programs and scripts that we want to run as well as the execution time and other options.
+Throughout the document, we will describe the way of using the different playbooks created. This will allow us to deploy the scenario (__mw-deployment.yaml__),configure the pods (__mw-config.yaml__), delete them (__mw-undeployment.yaml__) and execute tasks (__mw-tasks.yaml__). With this, we can easily **scale** the number of pods (__clients_number.yaml__) that we are going to deploy for different experiments. We can also decide the programs and scripts that we want to run as well as the execution time and other options.
 
 ## Scenario
 
