@@ -193,7 +193,7 @@ In this file we have to declare the differents programms that we are going to ex
 
 - floodoh.py:
     ```
-kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 cne-DoH-master/floodoh.py <n_connect> <qname> <qtype> <doh_url>
+    kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 cne-DoH-master/floodoh.py <n_connect> <qname> <qtype> <doh_url>
     ```
     In order to do a quick test on lots of connections to a DoH server we have been using a small python script that generates connections and occasionally asks a question in them. You can se more documentation inside cne-DoH-master folder.
     - Parameters:
