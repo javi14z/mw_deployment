@@ -204,5 +204,5 @@ In this file we have to declare the differents programms that we are going to ex
 
         -<qtype>: query type to ask for.
 
-        -<doh_url>: URL of the DoH server
+        -<doh_url>: URL of the DoH server.
 
