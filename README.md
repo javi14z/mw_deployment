@@ -92,8 +92,14 @@ In this file we have to declare the differents programms that we are going to ex
     kubectl exec -n ddos ddosserver -- service bind9 start
     ```
     We have setup a dns server using bind9. The server is waiting to receive new queries through port 53.
-    - Features: EDNS,DNSSEC
-    - Next features: DOH support
+    - Features: EDNS, DNSSEC, DOH support
+
+ - dnsdist:
+    ```
+    kubectl exec -n ddos ddosserver -- service dnsdist start
+    ```
+    Dnsdist is a load balancing and redirection server for DNS services. In this configuration, provides a DNS over HTTPS (DoH) service on all interfaces and port 443 using TLS certificates located in "/etc/ssl/certs/doh-cert.pem" and "/etc/ssl/certs/doh-key.pem". It acts as a DoH proxy, redirecting queries to the local DNS server listening on the local address and port 53.
+
 
 #### **Cgclient:**
 - ACROSSfile_transfer.py:
@@ -185,8 +191,18 @@ In this file we have to declare the differents programms that we are going to ex
         
         -<dns_query_packets>: set the number of querys.
 
-- dns_proxy (for doh):
-    This Python script initiates a DDoS attack on the server using the scapy library, simulating DNS Amplification.
+- floodoh.py:
+    ```
+kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 cne-DoH-master/floodoh.py <n_connect> <qname> <qtype> <doh_url>
+    ```
+    In order to do a quick test on lots of connections to a DoH server we have been using a small python script that generates connections and occasionally asks a question in them. You can se more documentation inside cne-DoH-master folder.
+    - Parameters:
+        
+        -<n_connect>: set the number of connections.
+        
+        -<qname>: DNS name to ask over and over again.
 
-    > [!NOTE]
-    > The DNS server still doesn't support doh
+        -<qtype>: query type to ask for.
+
+        -<doh_url>: URL of the DoH server
+

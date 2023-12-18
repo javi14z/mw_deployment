@@ -52,11 +52,13 @@
       shell: kubectl exec -n ddos ddosserver -- nginx -g 'daemon off;'
       async: 3600
       poll: 0
-
     - name: Start bind9
       shell: kubectl exec -n ddos ddosserver -- service named start
+
+    - name: Start dnsdist
+      shell: kubectl exec -n ddos ddosserver -- service dnsdist start
       
-      
+
     #Cglient:
     - name: Execute ACROSSfile_transfer
       shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSfile_transfer.py https://ia801802.us.archive.org/15/items/alexander-the-great-1997-part-1/Alexander%20The%20Great%20%281997%29%20Part%201.mp4 #set url
@@ -92,6 +94,10 @@
       
       
     #ddosclient:
+    - name: Start dnscrypt
+      shell: kubectl exec -n ddos {{ item.pod }} -- ./dnscrypt-proxy-linux_x86_64-2.1.5/config.sh
+      loop: "{{ ddosclients }}" 
+
     - name: Execute hping3.sh
       shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'sudo hping3 -c 100 -d 200 -S $ddosserver -w 1232 -p 43 --flood'
       loop: "{{ ddosclients }}"
@@ -109,6 +115,12 @@
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
+
+    - name: Execute floodoh.py
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 cne-DoH-master/floodoh.py 10 www.prueba.com A https://db.dominio1.com/
+      loop: "{{ ddosclients }}"
+      async: 3600 
+      poll: 0
     
 #    - name: Execute quick_scapy
 #      shell: kubectl exec -n ddos {{ item.pod }} -- python3 quic-scapy/scapy_demo.py
@@ -122,11 +134,6 @@
 #       async: 3600 
 #       poll: 0
 #
-#     - name: Execute dns_proxy
-#       shell: kubectl exec -it {{ item.pod }} -- /home/cognet/dnscrypt-proxy-linux_x86_64-2.1.5/config.sh
-#       loop: "{{ ddosclients }}"
-#       async: 3600 
-#       poll: 0
 
 #---------------------------------Waiting tasks---------------------------------------------------------------------------------------
 
