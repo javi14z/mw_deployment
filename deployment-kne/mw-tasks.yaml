@@ -54,7 +54,7 @@
       poll: 0
 
     - name: Start bind9
-      shell: kubectl exec -n ddos ddosserver -- service bind9 start
+      shell: kubectl exec -n ddos ddosserver -- service named start
       
       
     #Cglient:
