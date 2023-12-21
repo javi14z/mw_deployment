@@ -40,8 +40,8 @@
     - name: Configure ddosserver
       shell: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
       
-    - name: Configure internet
-      shell: kubectl exec -n ddos internet -- python3 internet-config.py
+    - name: Configure external
+      shell: kubectl exec -n ddos external -- python3 external-config.py
       ignore_errors: yes
 
 
@@ -72,21 +72,7 @@
         
     - name: Debug ddosserverip
       debug:
-        var: ddosserver_ip
-        
-    - name: Get internet IP
-      shell: "kubectl exec -n ddos internet -- ip addr show eth1 | awk '/inet / {gsub(/\\/\\/[0-9]+/, \"\", $2); print $2}'"
-      register: internet_ip_output
-      changed_when: false
-      ignore_errors: yes
-
-    - name: Extract IP from internet_ip_output
-      set_fact:
-        internet_ip: "{{ internet_ip_output.stdout.split('/')[0] }}"
-        
-    - name: Debug internetip
-      debug:
-        var: internet_ip
+        var: ddosserver_ip   
         
         
     - name: Store server IPs in a file
@@ -94,7 +80,6 @@
         content: |
           ddosserver_ip: "{{ ddosserver_ip }}"
           cgserver_ip: "{{ cgserver_ip }}"
-          internet_ip: "{{ internet_ip }}"
         dest: "{{ playbook_dir }}/server_ips.yaml"
 
 
@@ -107,7 +92,7 @@
 #---------------------------------------export variables----------------------------------------------------------------------------------------------
         
     - name: Generate custom .bashrc 
-      shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc && echo "export internet={{ internet_ip }}" >> /root/.bashrc && echo "export http_proxy=http://{{ internet_ip }}:3128" >> /root/.bashrc && echo "export https_proxy=http://{{ internet_ip }}:3128" >> /root/.bashrc'
+      shell: kubectl exec -n ddos {{ client.pod }} -- /bin/bash -c 'echo "export cgserver={{ cgserver_ip }}" >> /root/.bashrc && echo "export ddosserver={{ ddosserver_ip }}" >> /root/.bashrc'
       loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}] }}"
       loop_control:
         loop_var: client
@@ -120,34 +105,25 @@
         loop_var: client
       when: "'client' in client.name or 'server' in client.name"
         
-    - name: Generate custom apt.conf 
-      shell: kubectl exec -n ddos {{ client.pod }} -- env internet={{ internet_ip }} /bin/bash -c 'echo "Acquire::http::Proxy \"http://$internet:3128\";\nAcquire::https::Proxy \"http://$internet:3128\";" > /etc/apt/apt.conf'
-      loop: "{{ cgclients + ddosclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}] }}"
-      loop_control:
-        loop_var: client
-      when: "'client' in client.name or 'server' in client.name"
 
   #---------------------------------------internet pod configuration----------------------------------------------------------------------------------------------
       
     - name: Iptables
-      shell: kubectl exec -n ddos internet -- /bin/sh -c 'iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE'
+      shell: kubectl exec -n ddos external -- /bin/sh -c 'iptables -t nat -A POSTROUTING -o eth2 -j MASQUERADE'
       ignore_errors: yes
-      
-    - name: Proxy conf
-      shell: kubectl exec -n ddos internet -- env internet={{ internet_ip }} /bin/sh -c 'echo -e "tcp_outgoing_address $internet" >> /etc/squid/squid.conf'
-      ignore_errors: yes
-      
-    - name: Proxy Squid
-      shell: kubectl exec -n ddos internet -- squid -N
-      ignore_errors: yes
-      async: 3600
-      poll: 0
       
  #---------------------------------------configure resolv.conf----------------------------------------------------------------------------------------------       
     
     - name: Configure resolv.conf in ddosclient1
       shell: kubectl exec -n ddos {{ item.pod }} -- env ddosserver={{ ddosserver_ip }} /bin/bash -c 'sudo echo -e "nameserver $ddosserver\noptions edns0" > /etc/resolv.conf'
       loop: "{{ ddosclients }}" 
+
+    - name: Configure resolv.conf in cgclient
+      shell: kubectl exec -n ddos {{ client.pod  }} -- /bin/bash -c 'sudo echo -e "nameserver 8.8.8.8\noptions edns0" > /etc/resolv.conf'
+      loop: "{{ cgclients + [{'name': 'cgserver', 'pod': 'cgserver'}, {'name': 'ddosserver', 'pod': 'ddosserver'}] }}"
+      loop_control:
+        loop_var: client
+      when: "'client' in client.name or 'server' in client.name" 
       
 #---------------------------------------debug routers----------------------------------------------------------------------------------------------
 

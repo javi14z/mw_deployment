@@ -6,4 +6,7 @@
  #--------------------------------------------Deploy kne---------------------------------------------------------------------------
  
     - name: Deploy topology
-      shell: kne create ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml # Configure the path where the kne topology file is
+      shell: kne create ~/kne/examples/arista/b5gemini/TopologiaB5gemini.yaml # Configure the path where the kne topology file is
+
+    - name: Deploy external
+      shell: kubectl apply -f ~/kne/examples/arista/b5gemini/pod-external.yaml
