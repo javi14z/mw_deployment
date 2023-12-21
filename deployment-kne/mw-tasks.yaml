@@ -33,11 +33,7 @@
     - name: Debug loaded server IPs
       debug:
         var: cgserver_ip
-        
-    - name: Debug loaded server IPs
-      debug:
-        var: internet_ip
-      
+
 
 #---------------------------------Tasks execution---------------------------------------------------------------------------------------
     #cgserver:

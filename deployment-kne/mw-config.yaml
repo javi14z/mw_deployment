@@ -39,7 +39,10 @@
       
     - name: Configure ddosserver
       shell: kubectl exec -it -n ddos ddosserver -- python3 ddosserver-config.py
-      
+    
+    - name: COPY cp 
+      shell: kubectl cp -n ddos /home/mw/kne/examples/arista/b5gemini/configuracion/external-config.py external:/home/cognet/
+
     - name: Configure external
       shell: kubectl exec -n ddos external -- python3 external-config.py
       ignore_errors: yes
