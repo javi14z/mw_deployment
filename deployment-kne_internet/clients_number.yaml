@@ -1,0 +1,4 @@
+---
+# Declare the number of cglients and ddosclient for the deployment
+cg_count: 1
+ddos_count: 1

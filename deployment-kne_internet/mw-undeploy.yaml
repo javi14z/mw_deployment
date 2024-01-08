@@ -1,0 +1,81 @@
+---
+- name: Topology Undeploy
+  hosts: localhost
+  gather_facts: no
+  vars:
+    cgclients: []
+    ddosclients: []
+
+  tasks:
+#--------------------------------------------Configuration---------------------------------------------------------------------------
+    - name: Include client counts
+      include_vars:
+        file: clients_number.yaml
+  
+    - name: Crear cgclients
+      set_fact:
+        cgclients: "{{ cgclients + [{'name': 'cgclient' ~ item, 'pod': 'cgclient' ~ item}] }}"
+      loop: "{{ range(1, cg_count + 1)|list }}"
+    
+    - name: Crear ddosclients
+      set_fact:
+        ddosclients: "{{ ddosclients + [{'name': 'ddosclient' ~ item, 'pod': 'ddosclient' ~ item}] }}"
+      loop: "{{ range(1, ddos_count + 1)|list }}"
+      
+    - name: Get current date
+      command: date +%Y.%m.%d_%H.%M.%S
+      register: current_date
+      
+#--------------------------------------------Save logs---------------------------------------------------------------------------
+
+    - name: Create logs folder with current date
+      file:
+        path: "~/NDT/logs_{{ current_date.stdout }}"
+        state: directory
+    
+    - name: Copy logs folder cgclients
+      shell: "kubectl -n ddos cp {{ item.pod }}:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/{{ item.name }}_logs"
+      loop: "{{ cgclients }}"
+      ignore_errors: yes
+      async: 3600 
+      poll: 0
+      register: copylogcgclient_result 
+
+    - name: Copy logs folder ddosclients
+      shell: "kubectl -n ddos cp {{ item.pod }}:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/{{ item.name }}_logs"
+      loop: "{{ ddosclients }}"
+      ignore_errors: yes
+      async: 3600 
+      poll: 0
+      register: copylogddosclient_result 
+      
+    - name: Copy logs folder cgserver
+      shell: "kubectl -n ddos cp cgserver:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/cgserver_logs"
+      ignore_errors: yes
+      async: 3600 
+      poll: 0
+      register: copylogserver_result 
+      
+    - name: Copy logs folder ddosserver
+      shell: "kubectl -n ddos cp ddosserver:/home/cognet/logs ~/NDT/logs_{{ current_date.stdout }}/ddosserver_logs"
+      ignore_errors: yes
+      async: 3600 
+      poll: 0
+      register: copylogddosserver_result
+       
+      
+    - name: Finishing copying logs
+      async_status: 
+        jid: "{{ item.ansible_job_id }}"
+      loop: "{{ (copylogcgclient_result.results | default([])) + (copylogddosclient_result.results | default([])) + (copylogserver_result.results | default([])) + (copylogddosserver_result.results | default([])) }}"
+      register: acrossclient_jobs
+      until: acrossclient_jobs.finished
+      retries: 999
+      delay: 15
+      ignore_errors: yes
+    
+
+#--------------------------------------------Undeploy kne---------------------------------------------------------------------------
+    - name: Undeploy topology
+      shell: kne delete ~/kne/examples/cisco/conversion/Topologias/ddos/TopologiaDdos.yaml
+        

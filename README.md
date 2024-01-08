@@ -81,11 +81,11 @@ In this file we have to declare the differents programms that we are going to ex
     We use the sockets library in Python, which offers low-level access to network interfaces. Using this library, we have developed a straightforward server that listens for bursts of traffic from clients.
 
 #### **Ddosserver:**
-- ngnix:
+- caddy:
     ```
-    kubectl exec -n ddos ddosserver -- nginx -g 'daemon off;' 
+    kubectl exec -n ddos ddosserver -- caddy run --config /etc/caddy/Caddyfile' 
     ```
-    We have set up a standard HTTP/2 server using NGINX, with the aim of serving a basic 'Hello World' web page at the root URI. This URI will be used by clients to carry out the HTTP flood attack
+    We have set up a standard HTTP/3 server using caddy, with the aim of serving a basic 'Hello World' web page at the root URI. This URI will be used by clients to carry out the HTTP flood attack
 
 - bind9:
     ```
@@ -110,6 +110,13 @@ In this file we have to declare the differents programms that we are going to ex
     - Parameters:
         
         -<large_file_url>: set the url to dowload the large file
+
+- ACROSSfile_transfer_scp.py:
+    ```
+    kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSfile_transfer_scp.py 
+    ```
+    To simulate elephant flows, we have used scp. With this, we begin the transference of a large video.
+        
 
 - ACROSSconsuming_video.py:
     ```

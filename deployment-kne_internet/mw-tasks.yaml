@@ -33,7 +33,11 @@
     - name: Debug loaded server IPs
       debug:
         var: cgserver_ip
-
+        
+    - name: Debug loaded server IPs
+      debug:
+        var: internet_ip
+      
 
 #---------------------------------Tasks execution---------------------------------------------------------------------------------------
     #cgserver:
@@ -58,26 +62,25 @@
 
     #Cglient:
     - name: Execute ACROSSfile_transfer
-      shell: kubectl exec -n ddos {{ item.pod }} --  python3 ACROSSfile_transfer.py https://ia800301.us.archive.org/21/items/ThePhantomoftheOpera/Phantom_of_the_Opera_512kb.mp4 #set url
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSfile_transfer.py https://ia800301.us.archive.org/21/items/ThePhantomoftheOpera/Phantom_of_the_Opera_512kb.mp4 #set url
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
     
     - name: Execute ACROSSfile_transfer_scp
-      shell: kubectl exec -n ddos {{ item.pod }} --  python3 ACROSSfile_transfer_scp.py
-      loop: "{{ cgclients }}"
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSfile_transfer_scp.py
       async: 3600 
       poll: 0
 
     - name: Execute ACROSSconsuming_video.py
-      shell: kubectl exec -n ddos {{ item.pod }} --  python3 ACROSSconsuming_video.py https://www.youtube.com/watch?v=-No-226O0tg 30 #set time and url
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSconsuming_video.py https://www.youtube.com/watch?v=-No-226O0tg 30 #set time and url
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
       register: acrossclient_result
     
     - name: Execute ACROSSshorts.py
-      shell: kubectl exec -n ddos {{ item.pod }} --  python3 ACROSSshorts.py 30 #set time
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" python3 ACROSSshorts.py 30 #set time
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
@@ -90,7 +93,7 @@
       poll: 0
 
     - name: Execute CGTest19.sh
-      shell: kubectl exec -n ddos {{ item.pod }} --  ./CGTest19.sh web_links.txt
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ./CGTest19.sh web_links.txt
       loop: "{{ cgclients }}"
       async: 3600 
       poll: 0
@@ -114,13 +117,13 @@
       poll: 0
 
     - name: Execute dns_scapy
-      shell: kubectl exec -n ddos {{ item.pod }} --  ddosserver={{ ddosserver_ip }} python3 dns_scapy.py 100
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 dns_scapy.py 100
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
 
     - name: Execute floodoh.py
-      shell: kubectl exec -n ddos {{ item.pod }} --  ddosserver={{ ddosserver_ip }} python3 cne-DoH-master/floodoh.py 10 www.prueba.com A https://db.dominio1.com/
+      shell: kubectl exec -n ddos {{ item.pod }} -- env https_proxy="http://{{ internet_ip }}:3128" https_proxy="http://{{ internet_ip }}:3128" ddosserver={{ ddosserver_ip }} python3 cne-DoH-master/floodoh.py 10 www.prueba.com A https://db.dominio1.com/
       loop: "{{ ddosclients }}"
       async: 3600 
       poll: 0
